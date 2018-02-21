@@ -1,4 +1,4 @@
-package mrodkiewicz.pl.popularmovies;
+package mrodkiewicz.pl.popularmovies.view;
 
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -7,7 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
-public class DetailActivity extends AppCompatActivity {
+import mrodkiewicz.pl.popularmovies.R;
+import mrodkiewicz.pl.popularmovies.view.base.BaseAppCompatActivity;
+
+public class DetailActivity extends BaseAppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

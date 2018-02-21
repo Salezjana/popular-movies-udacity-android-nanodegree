@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">Popular Movies</string>
+    <string name="themoviedb_api_url">https://api.themoviedb.org/3/</string>
+
     <string name="title_activity_detail">DetailActivity</string>
+    <string name="settings">Settings</string>
+
+
+    <string name="download_movies">Downloading Movies</string>
+    <string name="download_details">Downloading Details</string>
+    <string name="no_internet">Turn internet on !</string>
+
 </resources>
