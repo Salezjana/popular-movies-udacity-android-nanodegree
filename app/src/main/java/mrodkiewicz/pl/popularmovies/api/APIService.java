@@ -1,9 +1,12 @@
 package mrodkiewicz.pl.popularmovies.api;
 
 import mrodkiewicz.pl.popularmovies.model.Movie;
+import mrodkiewicz.pl.popularmovies.model.MoviesResponse;
 import retrofit2.Call;
 import retrofit2.http.Field;
 import retrofit2.http.GET;
+import retrofit2.http.PATCH;
+import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
@@ -11,8 +14,10 @@ import retrofit2.http.Query;
  */
 
 public interface APIService {
-    @GET("/movie/{id}")
-    Call<Movie> getMovie(@Query("id") int id);
+    @GET("movie/top_rated")
+    Call<MoviesResponse> getTopRatedMovies(@Query("api_key") String apiKey);
 
+    @GET("movie/{id}")
+    Call<MoviesResponse> getMovieDetails(@Path("id") int id, @Query("api_key") String apiKey);
 
 }

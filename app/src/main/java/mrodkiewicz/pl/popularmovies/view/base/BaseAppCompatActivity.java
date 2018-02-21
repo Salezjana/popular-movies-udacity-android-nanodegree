@@ -8,6 +8,8 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
+import mrodkiewicz.pl.popularmovies.R;
+
 /**
  * Created by Mikołaj Rodkiewicz on 20.02.2018.
  */

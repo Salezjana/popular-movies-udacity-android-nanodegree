@@ -13,15 +13,9 @@ public class Movie {
     @SerializedName("backdrop_path")
     @Expose
     private String backdropPath;
-    @SerializedName("belongs_to_collection")
-    @Expose
-    private BelongsToCollection belongsToCollection;
     @SerializedName("budget")
     @Expose
     private Integer budget;
-    @SerializedName("genres")
-    @Expose
-    private List<Genre> genres = null;
     @SerializedName("homepage")
     @Expose
     private String homepage;
@@ -46,12 +40,6 @@ public class Movie {
     @SerializedName("poster_path")
     @Expose
     private String posterPath;
-    @SerializedName("production_companies")
-    @Expose
-    private List<ProductionCompany> productionCompanies = null;
-    @SerializedName("production_countries")
-    @Expose
-    private List<ProductionCountry> productionCountries = null;
     @SerializedName("release_date")
     @Expose
     private String releaseDate;
@@ -61,9 +49,6 @@ public class Movie {
     @SerializedName("runtime")
     @Expose
     private Integer runtime;
-    @SerializedName("spoken_languages")
-    @Expose
-    private List<SpokenLanguage> spokenLanguages = null;
     @SerializedName("status")
     @Expose
     private String status;
@@ -99,13 +84,6 @@ public class Movie {
         this.backdropPath = backdropPath;
     }
 
-    public BelongsToCollection getBelongsToCollection() {
-        return belongsToCollection;
-    }
-
-    public void setBelongsToCollection(BelongsToCollection belongsToCollection) {
-        this.belongsToCollection = belongsToCollection;
-    }
 
     public Integer getBudget() {
         return budget;
@@ -113,14 +91,6 @@ public class Movie {
 
     public void setBudget(Integer budget) {
         this.budget = budget;
-    }
-
-    public List<Genre> getGenres() {
-        return genres;
-    }
-
-    public void setGenres(List<Genre> genres) {
-        this.genres = genres;
     }
 
     public String getHomepage() {
@@ -187,21 +157,6 @@ public class Movie {
         this.posterPath = posterPath;
     }
 
-    public List<ProductionCompany> getProductionCompanies() {
-        return productionCompanies;
-    }
-
-    public void setProductionCompanies(List<ProductionCompany> productionCompanies) {
-        this.productionCompanies = productionCompanies;
-    }
-
-    public List<ProductionCountry> getProductionCountries() {
-        return productionCountries;
-    }
-
-    public void setProductionCountries(List<ProductionCountry> productionCountries) {
-        this.productionCountries = productionCountries;
-    }
 
     public String getReleaseDate() {
         return releaseDate;
@@ -227,13 +182,6 @@ public class Movie {
         this.runtime = runtime;
     }
 
-    public List<SpokenLanguage> getSpokenLanguages() {
-        return spokenLanguages;
-    }
-
-    public void setSpokenLanguages(List<SpokenLanguage> spokenLanguages) {
-        this.spokenLanguages = spokenLanguages;
-    }
 
     public String getStatus() {
         return status;
