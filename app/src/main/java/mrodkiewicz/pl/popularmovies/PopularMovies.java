@@ -4,9 +4,11 @@ import android.content.Context;
 
 import java.util.concurrent.TimeUnit;
 
+import mrodkiewicz.pl.popularmovies.helpers.Config;
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
@@ -17,7 +19,7 @@ import timber.log.Timber;
 public class PopularMovies {
     public static Retrofit retrofit;
     public static int TIMEOUT_SECONDS = 20;
-    private OkHttpClient client;
+    public OkHttpClient client;
 
     public PopularMovies() {
         final HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
@@ -33,10 +35,10 @@ public class PopularMovies {
         }
     }
 
-    public Retrofit getClient(Context context) {
+    public Retrofit getClient() {
         if (retrofit == null) {
             retrofit = new Retrofit.Builder()
-                    .baseUrl(context.getResources().getString(R.string.themoviedb_api_url))
+                    .baseUrl(Config.API_URL)
                     .addConverterFactory(GsonConverterFactory.create())
                     .client(client)
                     .build();

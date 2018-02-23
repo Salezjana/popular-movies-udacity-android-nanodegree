@@ -12,6 +12,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import mrodkiewicz.pl.popularmovies.R;
+import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import timber.log.Timber;
 
@@ -46,12 +47,13 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         Timber.d("onBindViewHolder");
-        Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(holder.imageView);
+        Timber.d("api poster load url: " + Config.API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movieList.get(position).getPosterPath());
+        Picasso.with(context).load(Config.API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movieList.get(position).getPosterPath()).into(holder.imageView);
     }
 
     @Override
     public int getItemCount() {
-        return data.length;
+        return movieList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

@@ -62,8 +62,7 @@ public class MainActivity extends BaseAppCompatActivity {
     }
 
     private void setupView() {
-        String[] data = {"1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48"};
-        moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getApplicationContext(), data);
+        moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getApplicationContext(), movies);
         moviesRecyclerView.setAdapter(moviesRecyclerViewAdapter);
         moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -101,15 +100,18 @@ public class MainActivity extends BaseAppCompatActivity {
     private void loadMovies() {
         if (isInternetEnable()) {
             APIService apiService =
-                    popularMovies.getClient(this).create(APIService.class);
+                    popularMovies.getClient().create(APIService.class);
 
             Call<MoviesResponse> call = apiService.getTopRatedMovies(API_KEY);
             call.enqueue(new Callback<MoviesResponse>() {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                    List<Movie> movies = response.body().getResults();
-                    Timber.d("MoviesResponse getResults" + movies.get(1).getId());
-                    Timber.d("MoviesResponse onResponse");
+                    List<Movie> moviesResposnse = response.body().getResults();
+                    movies.clear();
+                    movies.addAll(moviesResposnse);
+                    moviesRecyclerViewAdapter.notifyDataSetChanged();
+
+                    Timber.d("MoviesResponse getResults" + response.toString());
                 }
 
                 @Override
@@ -126,8 +128,8 @@ public class MainActivity extends BaseAppCompatActivity {
                     .show();
             hideProgressDialog();
             Timber.d("MoviesResponse internet off");
-
         }
+
 
     }
 
