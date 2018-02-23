@@ -61,7 +61,7 @@
                         android:textColor="@color/colorTextWhite" />
 
                     <TextView
-                        android:id="@+id/textView6"
+                        android:id="@+id/activity_detail_timelong_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -70,7 +70,7 @@
                         android:textColor="@color/colorTextWhite" />
 
                     <TextView
-                        android:id="@+id/textView7"
+                        android:id="@+id/activity_detail_mark_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
@@ -79,11 +79,11 @@
                         android:textColor="@color/colorTextWhite" />
 
                     <Button
-                        android:id="@+id/button"
+                        android:id="@+id/activity_detail_add_favoutire_button"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:backgroundTint="@color/colorSecondary"
-                        android:text="Button"
+                        android:text="@string/add_to_favourite_button_activity_detail"
                         android:textColor="@color/colorTextWhite" />
                 </LinearLayout>
 

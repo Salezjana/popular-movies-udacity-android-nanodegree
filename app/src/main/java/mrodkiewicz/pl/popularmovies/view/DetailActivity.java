@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -28,14 +29,22 @@ import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class DetailActivity extends BaseAppCompatActivity {
     public static final String EXTRAS_MOVIE_ID = "EXTRAS_MOVIE_ID";
-    @BindView(R.id.activity_detail_imageView)
-    ImageView activityDetailImageView;
     @BindView(R.id.activity_detail_title_textview)
     TextView activityDetailTitleTextview;
+    @BindView(R.id.activity_detail_imageView)
+    ImageView activityDetailImageView;
+    @BindView(R.id.activity_detail_year_textView)
+    TextView activityDetailYearTextView;
+    @BindView(R.id.activity_detail_timelong_textView)
+    TextView activityDetailTimelongTextView;
+    @BindView(R.id.activity_detail_mark_textView)
+    TextView activityDetailMarkTextView;
+    @BindView(R.id.activity_detail_add_favoutire_button)
+    Button activityDetailAddFavoutireButton;
+    @BindView(R.id.activity_detail_description_textView)
+    TextView activityDetailDescriptionTextView;
     @BindView(R.id.activity_detail)
     LinearLayout activityDetail;
-    @BindView(R.id.activity_detail_description_textView)
-    TextView activityDescriptionTextView;
     private APIService service;
     private Integer movieId;
     private PopularMovies popularMovies;
@@ -81,7 +90,10 @@ public class DetailActivity extends BaseAppCompatActivity {
                     setTitle(movie.getTitle());
                     Picasso.with(getApplicationContext()).load(API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movie.getPosterPath()).into(activityDetailImageView);
                     activityDetailTitleTextview.setText(movie.getTitle());
-                    activityDescriptionTextView.setText(movie.getOverview());
+                    activityDetailDescriptionTextView.setText(movie.getOverview());
+                    activityDetailYearTextView.setText(movie.getReleaseDate());
+                    activityDetailTimelongTextView.setText(movie.getRuntime().toString());
+                    activityDetailMarkTextView.setText(movie.getVoteAverage().toString());
                     Timber.d("MoviesResponse movie" + movie.toString());
 
                 }
