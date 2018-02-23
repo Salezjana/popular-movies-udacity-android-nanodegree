@@ -71,7 +71,7 @@ public class MainActivity extends BaseAppCompatActivity {
                 moviesRecyclerView, new RecyclerViewItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                startActivity(DetailActivity.getConfigureIntent(getApplicationContext(),position));
+                startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position).getId()));
             }
 
             @Override
