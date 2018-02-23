@@ -1,5 +1,6 @@
 package mrodkiewicz.pl.popularmovies.view;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -10,6 +11,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,6 +22,7 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.MoviesRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
+import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.model.MoviesResponse;
@@ -35,7 +38,6 @@ public class MainActivity extends BaseAppCompatActivity {
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
 
-    private APIService service;
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
@@ -52,7 +54,6 @@ public class MainActivity extends BaseAppCompatActivity {
 
 
         showProgressDialog(null, getString(R.string.download_movies));
-
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
@@ -70,7 +71,7 @@ public class MainActivity extends BaseAppCompatActivity {
                 moviesRecyclerView, new RecyclerViewItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                Timber.d("onItemClick");
+                startActivity(DetailActivity.getConfigureIntent(getApplicationContext(),position));
             }
 
             @Override
