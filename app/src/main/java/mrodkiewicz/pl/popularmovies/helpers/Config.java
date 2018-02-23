@@ -5,5 +5,5 @@ package mrodkiewicz.pl.popularmovies.helpers;
  */
 
 public class Config {
-    public static String API_KEY = "XXXXXX";
+    public static String API_KEY = "16839a7e2576852d8e09e8c148e2be7c";
 }

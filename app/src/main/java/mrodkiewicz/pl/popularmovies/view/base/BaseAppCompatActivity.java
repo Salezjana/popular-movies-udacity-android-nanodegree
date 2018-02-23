@@ -8,8 +8,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import mrodkiewicz.pl.popularmovies.R;
-
 /**
  * Created by Mikołaj Rodkiewicz on 20.02.2018.
  */
@@ -24,7 +22,7 @@ public class BaseAppCompatActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
     }
 
-    protected boolean isInternetEnable(){
+    protected boolean isInternetEnable() {
         ConnectivityManager conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
         return (activeNetwork != null && activeNetwork.isConnected());
@@ -41,7 +39,7 @@ public class BaseAppCompatActivity extends AppCompatActivity {
         }
     }
 
-    public void showProgressDialog(String title, String message){
+    public void showProgressDialog(String title, String message) {
         if (!progressDialog.isShowing()) {
             progressDialog.setTitle(title);
             progressDialog.setMessage(message);
@@ -50,10 +48,12 @@ public class BaseAppCompatActivity extends AppCompatActivity {
             progressDialog.show();
         }
     }
-    public Boolean isProgressDialogShow(){
+
+    public Boolean isProgressDialogShow() {
         return progressDialog.isShowing();
     }
-    public void hideProgressDialog(){
+
+    public void hideProgressDialog() {
         progressDialog.dismiss();
     }
 }

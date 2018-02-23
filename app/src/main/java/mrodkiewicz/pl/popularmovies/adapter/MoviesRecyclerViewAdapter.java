@@ -5,69 +5,62 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.ImageView;
 
-import butterknife.BindView;
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
+
 import mrodkiewicz.pl.popularmovies.R;
+import mrodkiewicz.pl.popularmovies.model.Movie;
+import timber.log.Timber;
 
 /**
  * Created by pc-mikolaj on 21.02.2018.
  */
 
 public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecyclerViewAdapter.ViewHolder> {
-    private String[] mData = new String[0];
-    private LayoutInflater mInflater;
-    private ItemClickListener mClickListener;
+    private List<Movie> movieList;
+    private Context context;
+    private String data[];
 
-    public MoviesRecyclerViewAdapter(Context context, String[] data) {
-        this.mInflater = LayoutInflater.from(context);
-        this.mData = data;
+    public MoviesRecyclerViewAdapter(Context context, List<Movie> movieList) {
+        this.movieList = movieList;
+        this.context = context;
+    }
+
+    public MoviesRecyclerViewAdapter(Context context, String data[]) {
+        this.context = context;
+        this.data = data;
     }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.list_item_movie, parent, false);
-        return new ViewHolder(view);
+        View itemView = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.list_item_movie, parent, false);
+        Timber.d("onCreateViewHolder");
+
+        return new ViewHolder(itemView);
     }
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        String animal = mData[position];
-        holder.myTextView.setText(animal);
+        Timber.d("onBindViewHolder");
+        Picasso.with(context).load("http://i.imgur.com/DvpvklR.png").into(holder.imageView);
     }
 
     @Override
     public int getItemCount() {
-        return mData.length;
+        return data.length;
     }
 
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        ImageView imageView;
 
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
-
-        ViewHolder(View itemView) {
+        public ViewHolder(View itemView) {
             super(itemView);
-            myTextView = (TextView) itemView.findViewById(R.id.info_text);
-            itemView.setOnClickListener(this);
+            Timber.d("ViewHolder constructor");
+            imageView = (ImageView) itemView.findViewById(R.id.imageView);
         }
-
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) mClickListener.onItemClick(view, getAdapterPosition());
-        }
-    }
-
-    public String getItem(int id) {
-        return mData[id];
-    }
-
-
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
-    }
-
-    public interface ItemClickListener {
-        void onItemClick(View view, int position);
     }
 }
