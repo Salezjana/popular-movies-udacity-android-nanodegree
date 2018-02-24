@@ -78,13 +78,6 @@
                         android:text="TextView"
                         android:textColor="@color/colorTextWhite" />
 
-                    <Button
-                        android:id="@+id/activity_detail_add_favoutire_button"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:backgroundTint="@color/colorSecondary"
-                        android:text="@string/add_to_favourite_button_activity_detail"
-                        android:textColor="@color/colorTextWhite" />
                 </LinearLayout>
 
             </LinearLayout>

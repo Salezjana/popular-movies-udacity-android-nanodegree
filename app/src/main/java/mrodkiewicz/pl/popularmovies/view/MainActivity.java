@@ -35,6 +35,8 @@ import timber.log.Timber;
 import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class MainActivity extends BaseAppCompatActivity {
+    public static String LOAD_NEXT_PAGE = "LOADNEXTPAGE";
+
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
 
@@ -58,7 +60,7 @@ public class MainActivity extends BaseAppCompatActivity {
         popularMovies = new PopularMovies();
 
         setupView();
-        loadMovies();
+        loadMovies(1);
 
     }
 
@@ -71,7 +73,11 @@ public class MainActivity extends BaseAppCompatActivity {
                 moviesRecyclerView, new RecyclerViewItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position).getId()));
+                if (position == 20){
+
+                }else {
+                    startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position).getId()));
+                }
             }
 
             @Override
@@ -98,7 +104,7 @@ public class MainActivity extends BaseAppCompatActivity {
         }
     }
 
-    private void loadMovies() {
+    private void loadMovies(int page) {
         if (isInternetEnable()) {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
@@ -110,6 +116,9 @@ public class MainActivity extends BaseAppCompatActivity {
                     List<Movie> moviesResposnse = response.body().getResults();
                     movies.clear();
                     movies.addAll(moviesResposnse);
+                    Timber.d("movies size" + movies.size());
+                    movies.add(new Movie(LOAD_NEXT_PAGE));
+                    Timber.d("movies size" + movies.size());
                     moviesRecyclerViewAdapter.notifyDataSetChanged();
 
                     Timber.d("MoviesResponse getResults" + response.toString());

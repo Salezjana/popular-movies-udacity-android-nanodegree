@@ -66,6 +66,10 @@ public class Movie {
     @Expose
     private Integer voteCount;
 
+    public Movie(String title) {
+
+    }
+
     public Boolean getAdult() {
         return adult;
     }

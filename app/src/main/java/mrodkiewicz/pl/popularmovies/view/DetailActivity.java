@@ -39,8 +39,6 @@ public class DetailActivity extends BaseAppCompatActivity {
     TextView activityDetailTimelongTextView;
     @BindView(R.id.activity_detail_mark_textView)
     TextView activityDetailMarkTextView;
-    @BindView(R.id.activity_detail_add_favoutire_button)
-    Button activityDetailAddFavoutireButton;
     @BindView(R.id.activity_detail_description_textView)
     TextView activityDetailDescriptionTextView;
     @BindView(R.id.activity_detail)
