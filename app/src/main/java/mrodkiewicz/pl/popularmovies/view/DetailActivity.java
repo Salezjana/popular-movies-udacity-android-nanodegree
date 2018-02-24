@@ -2,7 +2,11 @@ package mrodkiewicz.pl.popularmovies.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
+import android.support.annotation.ColorInt;
+import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,11 +14,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import es.dmoral.toasty.Toasty;
 import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.api.APIService;
@@ -45,10 +51,15 @@ public class DetailActivity extends BaseAppCompatActivity {
     TextView activityDetailDescriptionTextView;
     @BindView(R.id.activity_detail)
     LinearLayout activityDetail;
+
+
     private APIService service;
     private Integer movieId;
     private PopularMovies popularMovies;
     private Movie movie;
+
+    private boolean isFavoutire;
+
 
     public static Intent getConfigureIntent(Context context, Integer movieId) {
         Intent intent = new Intent(context, DetailActivity.class);
@@ -61,6 +72,8 @@ public class DetailActivity extends BaseAppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
+
+
 
         popularMovies = new PopularMovies();
         showProgressDialog(null,getString(R.string.download_details));
@@ -84,8 +97,16 @@ public class DetailActivity extends BaseAppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), 19404));
+            case R.id.action_favourite:
+                if (isFavoutire){
+                    isFavoutire = false;
+                    item.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                    item.setTitle(getString(R.string.action_favourite_false));
+                }else{
+                    isFavoutire = true;
+                    item.setIcon(R.drawable.ic_favorite_white_24dp);
+                    item.setTitle(getString(R.string.action_favourite_true));
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -133,6 +154,9 @@ public class DetailActivity extends BaseAppCompatActivity {
         }
 
 
+    }
+    public void showErrorToasty(String errorString){
+        Toasty.error(this, errorString, Toast.LENGTH_SHORT, true).show();
     }
 
 

@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Popular Movies</string>
-    <string name="themoviedb_api_url"></string>
     <string name="title_activity_detail">DetailActivity</string>
     <string name="settings">Settings</string>
 
@@ -8,9 +7,10 @@
     <string name="download_movies">Downloading Movies</string>
     <string name="download_details">Downloading Details</string>
     <string name="no_internet">Turn internet on !</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="action_settings">Settings</string>
-    <string name="section_format">Hello World from section: %1$d</string>
-    <string name="add_to_favourite_button_activity_detail">Add to favourite</string>
 
+
+    <string name="action_settings">Settings</string>
+    <string name="action_sort">Change sort type</string>
+    <string name="action_favourite_false">Add to favourite</string>
+    <string name="action_favourite_true">Remove from favourite</string>
 </resources>

@@ -3,6 +3,7 @@ package mrodkiewicz.pl.popularmovies.adapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -50,7 +51,8 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         if (movieList.size()-1  == position) {
             Timber.d("last element" + position);
             holder.textView.setText("NEXT PAGE PLESE");
-            holder.imageView.setImageDrawable(new ColorDrawable(Color.RED));
+            
+            holder.imageView.setImageDrawable(new ColorDrawable(context.getResources().getColor(R.color.colorSecondary)));
         } else {
             Picasso.with(context)
                     .load(Config.API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movieList.get(position).getPosterPath())

@@ -9,6 +9,7 @@ import timber.log.Timber;
 
 /**
  * Created by pc-mikolaj on 24.02.2018.
+ * Saving,reading favourites films
  */
 
 public class Favourites{
@@ -19,6 +20,7 @@ public class Favourites{
 
     public Favourites(Context context) {
         favouritesIDMovies = new ArrayList<Integer>();
+        Timber.d("Favourites");
         sharedPreferences = context.getSharedPreferences("PopularMoviesApp",Context.MODE_PRIVATE);
         editor=sharedPreferences.edit();
     }
@@ -31,18 +33,20 @@ public class Favourites{
 
     public boolean isOnList(Integer i){
         int j = favouritesIDMovies.indexOf(i);
-        if (j== -1){
-            Timber.d("FALSE");
+        if(j == -1){
+            Timber.d("isOnList "+i+"FALSE");
+            return false;
         }else{
-            Timber.d("TRUE");
+            Timber.d("isOnList "+i+" TRUE");
+            return true;
         }
-        return false;
+
     }
 
     public void LogFavouritesMovies(){
-        Timber.d(favouritesIDMovies.toString());
+        Timber.d("Favourites" + favouritesIDMovies.toString());
     }
     public ArrayList<Integer> getFavouritesMovies(){
-     return null;
+     return favouritesIDMovies;
     }
 }

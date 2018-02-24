@@ -20,6 +20,7 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.MoviesRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
+import mrodkiewicz.pl.popularmovies.helpers.Favourites;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.model.MoviesResponse;
@@ -33,13 +34,13 @@ import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class MainActivity extends BaseAppCompatActivity {
     public static String LOAD_NEXT_PAGE = "LOADNEXTPAGE";
-    public static Integer CURRENT_PAGE = 0;
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
-
     private ArrayList<Movie> movies;
+
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
+    private Integer current_page = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,14 +52,14 @@ public class MainActivity extends BaseAppCompatActivity {
             Timber.plant(new Timber.DebugTree());
         }
 
-        
+
 
         showProgressDialog(null, getString(R.string.download_movies));
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
         setupView();
-        loadMovies(1);
+        loadMovies(current_page);
 
     }
 
@@ -72,7 +73,8 @@ public class MainActivity extends BaseAppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 if (position == 20){
-                    loadMovies(2);
+                    loadMovies(current_page + 1);
+
                 }else {
                     startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position).getId()));
                 }
@@ -95,7 +97,14 @@ public class MainActivity extends BaseAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), 19404));
+                Favourites favourites = new Favourites(this);
+                favourites.addFavouritesMovies(1);
+                favourites.addFavouritesMovies(12);
+                favourites.addFavouritesMovies(3);
+                favourites.addFavouritesMovies(0);
+                favourites.addFavouritesMovies(-1);
+                favourites.isOnList(1);
+                favourites.LogFavouritesMovies();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -107,7 +116,7 @@ public class MainActivity extends BaseAppCompatActivity {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
 
-            Call<MoviesResponse> call = apiService.getTopRatedMovies(API_KEY);
+            Call<MoviesResponse> call = apiService.getTopRatedMoviesPage(API_KEY,page);
             call.enqueue(new Callback<MoviesResponse>() {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
@@ -118,6 +127,7 @@ public class MainActivity extends BaseAppCompatActivity {
                     movies.add(new Movie(LOAD_NEXT_PAGE));
                     Timber.d("movies size" + movies.size());
                     moviesRecyclerViewAdapter.notifyDataSetChanged();
+                    moviesRecyclerView.scrollToPosition(1);
 
                     Timber.d("MoviesResponse getResults" + response.toString());
                 }
