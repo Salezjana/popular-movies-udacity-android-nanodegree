@@ -4,6 +4,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -61,6 +63,7 @@ public class DetailActivity extends BaseAppCompatActivity {
         ButterKnife.bind(this);
 
         popularMovies = new PopularMovies();
+        showProgressDialog(null,getString(R.string.download_details));
 
         if (getIntent().getExtras() != null) {
             movieId = getIntent().getIntExtra(EXTRAS_MOVIE_ID, -1);
@@ -70,6 +73,23 @@ public class DetailActivity extends BaseAppCompatActivity {
         }
 
 
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity_detail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), 19404));
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private void loadMovies() {

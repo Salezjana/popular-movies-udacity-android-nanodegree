@@ -1,6 +1,5 @@
 package mrodkiewicz.pl.popularmovies.view;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -11,7 +10,6 @@ import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +20,6 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.MoviesRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
-import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.model.MoviesResponse;
@@ -36,7 +33,7 @@ import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class MainActivity extends BaseAppCompatActivity {
     public static String LOAD_NEXT_PAGE = "LOADNEXTPAGE";
-
+    public static Integer CURRENT_PAGE = 0;
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
 
@@ -54,6 +51,7 @@ public class MainActivity extends BaseAppCompatActivity {
             Timber.plant(new Timber.DebugTree());
         }
 
+        
 
         showProgressDialog(null, getString(R.string.download_movies));
         movies = new ArrayList<Movie>();
@@ -74,7 +72,7 @@ public class MainActivity extends BaseAppCompatActivity {
             @Override
             public void onItemClick(View view, int position) {
                 if (position == 20){
-
+                    loadMovies(2);
                 }else {
                     startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position).getId()));
                 }
@@ -89,7 +87,7 @@ public class MainActivity extends BaseAppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater().inflate(R.menu.menu_activity_main, menu);
         return true;
     }
 
@@ -97,7 +95,7 @@ public class MainActivity extends BaseAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_settings:
-                startActivity(new Intent(this, DetailActivity.class));
+                startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), 19404));
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
