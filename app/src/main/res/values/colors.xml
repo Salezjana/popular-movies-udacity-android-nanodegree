@@ -10,6 +10,7 @@
 
 
     <color name="colorIcon">#ffffff</color>
+    <color name="colorIconFavourite">#d81b60</color>
     <color name="colorIconRecycleView">#f4511e</color>
 
     <color name="colorTextBlack">#000000</color>

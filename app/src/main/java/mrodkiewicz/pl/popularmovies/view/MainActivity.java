@@ -2,7 +2,6 @@ package mrodkiewicz.pl.popularmovies.view;
 
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabItem;
 import android.support.transition.BuildConfig;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -20,7 +19,6 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.MoviesRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
-import mrodkiewicz.pl.popularmovies.helpers.Favourites;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.model.MoviesResponse;
