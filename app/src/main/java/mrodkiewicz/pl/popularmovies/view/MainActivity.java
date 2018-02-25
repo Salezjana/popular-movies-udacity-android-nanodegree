@@ -1,8 +1,8 @@
 package mrodkiewicz.pl.popularmovies.view;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TabItem;
 import android.support.transition.BuildConfig;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -33,14 +33,15 @@ import timber.log.Timber;
 import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class MainActivity extends BaseAppCompatActivity {
+    public static String LOAD_BEFORE_PAGE = "LOADNEXTPAGE";
     public static String LOAD_NEXT_PAGE = "LOADNEXTPAGE";
+    private Integer current_page = 1;
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
-    private ArrayList<Movie> movies;
 
+    private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
-    private Integer current_page = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,29 +54,49 @@ public class MainActivity extends BaseAppCompatActivity {
         }
 
 
-
         showProgressDialog(null, getString(R.string.download_movies));
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
         setupView();
         loadMovies(current_page);
+        initListener();
 
     }
 
     private void setupView() {
-        moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getApplicationContext(), movies);
+        moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getApplicationContext(), movies,current_page);
         moviesRecyclerView.setAdapter(moviesRecyclerViewAdapter);
         moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+    }
+
+    private void initListener() {
         moviesRecyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
                 moviesRecyclerView, new RecyclerViewItemClickListener.OnItemClickListener() {
             @Override
             public void onItemClick(View view, int position) {
-                if (position == 20){
-                    loadMovies(current_page + 1);
-
-                }else {
+                if (movies.get(position).getTitle() == null) {
+                    if (position == 0) {
+                        Timber.d("onItemClick false");
+                        Timber.d("onItemClick"+movies.get(position).getTitle());
+                        Timber.d("onItemClick"+movies.get(position));
+                        current_page -= 1;
+                        moviesRecyclerViewAdapter.setPage(current_page);
+                        loadMovies(current_page);
+                    }else {
+                        Timber.d("onItemClick false");
+                        Timber.d("onItemClick"+movies.get(position).getTitle());
+                        Timber.d("onItemClick"+movies.get(position));
+                        current_page += 1;
+                        moviesRecyclerViewAdapter.setPage(current_page);
+                        loadMovies(current_page);
+                    }
+                } else {
+                    Timber.d("onItemClick true");
+                    Timber.d("onItemClick "+movies.get(position).getTitle());
+                    Timber.d("onItemClick "+movies.get(position));
                     startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position).getId()));
                 }
             }
@@ -111,25 +132,27 @@ public class MainActivity extends BaseAppCompatActivity {
         }
     }
 
-    private void loadMovies(int page) {
+    private void loadMovies(final int page) {
         if (isInternetEnable()) {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
 
-            Call<MoviesResponse> call = apiService.getTopRatedMoviesPage(API_KEY,page);
+            Call<MoviesResponse> call = apiService.getTopRatedMoviesPage(API_KEY, page);
             call.enqueue(new Callback<MoviesResponse>() {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                     List<Movie> moviesResposnse = response.body().getResults();
                     movies.clear();
+                    if (page!=1){
+                        movies.add(new Movie(LOAD_BEFORE_PAGE));
+                    }
                     movies.addAll(moviesResposnse);
-                    Timber.d("movies size" + movies.size());
                     movies.add(new Movie(LOAD_NEXT_PAGE));
-                    Timber.d("movies size" + movies.size());
                     moviesRecyclerViewAdapter.notifyDataSetChanged();
                     moviesRecyclerView.scrollToPosition(1);
 
                     Timber.d("MoviesResponse getResults" + response.toString());
+                    Timber.d("MoviesResponse getResults");
                 }
 
                 @Override
