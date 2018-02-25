@@ -160,6 +160,7 @@ public class DetailActivity extends BaseAppCompatActivity {
                     Snackbar.LENGTH_INDEFINITE)
                     .show();
             hideProgressDialog();
+            showErrorToasty(getString(R.string.no_internet));
             Timber.d("MoviesResponse internet off");
         }
 

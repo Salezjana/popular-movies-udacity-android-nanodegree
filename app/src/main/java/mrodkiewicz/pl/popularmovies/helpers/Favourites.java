@@ -25,6 +25,10 @@ public class Favourites{
         editor=sharedPreferences.edit();
         favouritesIDMovies = new ArrayList<Integer>();
 
+        loadFavoutires();
+    }
+
+    private void loadFavoutires() {
         String defaultValue = "favourites_movies_string";
         String savedValue = sharedPreferences.getString("favourites_movies_string", defaultValue);
         Timber.d("Favourites savedvalue: " + savedValue);
