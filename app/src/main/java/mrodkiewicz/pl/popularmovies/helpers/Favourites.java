@@ -2,6 +2,7 @@ package mrodkiewicz.pl.popularmovies.helpers;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 
 import java.util.ArrayList;
 
@@ -19,10 +20,21 @@ public class Favourites{
     private Context context;
 
     public Favourites(Context context) {
-        favouritesIDMovies = new ArrayList<Integer>();
         Timber.d("Favourites");
         sharedPreferences = context.getSharedPreferences("PopularMoviesApp",Context.MODE_PRIVATE);
         editor=sharedPreferences.edit();
+        favouritesIDMovies = new ArrayList<Integer>();
+
+        String defaultValue = "favourites_movies_string";
+        String savedValue = sharedPreferences.getString("favourites_movies_string", defaultValue);
+        Timber.d("Favourites savedvalue: " + savedValue);
+        String savedValueForTable = savedValue.replace("[","");
+        savedValueForTable = savedValueForTable.replace("]","");
+        Timber.d("Favourites savedvalue savedValueForTable: " + savedValueForTable);
+        String[] strings = savedValueForTable.split(",");
+        for(String w:strings){
+            Timber.d("Favourites savedvalue strings[]: " + w);
+        }
     }
 
     public void addFavouritesMovies(Integer movieID){
@@ -46,7 +58,5 @@ public class Favourites{
     public void LogFavouritesMovies(){
         Timber.d("Favourites" + favouritesIDMovies.toString());
     }
-    public ArrayList<Integer> getFavouritesMovies(){
-     return favouritesIDMovies;
-    }
+
 }

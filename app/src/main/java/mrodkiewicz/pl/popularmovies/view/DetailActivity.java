@@ -2,6 +2,8 @@ package mrodkiewicz.pl.popularmovies.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.graphics.drawable.Icon;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.Menu;
@@ -20,6 +22,7 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.api.APIService;
 import mrodkiewicz.pl.popularmovies.helpers.Config;
+import mrodkiewicz.pl.popularmovies.helpers.Favourites;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.view.base.BaseAppCompatActivity;
 import retrofit2.Call;
@@ -52,9 +55,10 @@ public class DetailActivity extends BaseAppCompatActivity {
     private Integer movieId;
     private PopularMovies popularMovies;
     private Movie movie;
-
+    private Favourites favourites;
     private boolean isFavoutire;
-
+    private MenuItem menuItem;
+    private Menu menu;
 
     public static Intent getConfigureIntent(Context context, Integer movieId) {
         Intent intent = new Intent(context, DetailActivity.class);
@@ -68,8 +72,6 @@ public class DetailActivity extends BaseAppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-
-
         popularMovies = new PopularMovies();
         showProgressDialog(null,getString(R.string.download_details));
 
@@ -80,12 +82,24 @@ public class DetailActivity extends BaseAppCompatActivity {
             finish();
         }
 
+        favourites = new Favourites(this);
+
+
 
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_detail, menu);
+        this.menu = menu;
+        menuItem = menu.getItem(0);
+        if(favourites.isOnList(movieId)){
+            menuItem.setIcon(R.drawable.ic_favorite_24dp);
+            menuItem.setTitle(getString(R.string.action_favourite_true));
+        }else{
+            menuItem.setIcon(R.drawable.ic_favorite_border_24dp);
+            menuItem.setTitle(getString(R.string.action_favourite_false));
+        }
         return true;
     }
 
@@ -99,6 +113,7 @@ public class DetailActivity extends BaseAppCompatActivity {
                     item.setTitle(getString(R.string.action_favourite_false));
                 }else{
                     isFavoutire = true;
+                    favourites.addFavouritesMovies(movieId);
                     item.setIcon(R.drawable.ic_favorite_24dp);
                     item.setTitle(getString(R.string.action_favourite_true));
                 }

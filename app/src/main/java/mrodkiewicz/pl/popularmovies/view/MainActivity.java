@@ -92,9 +92,6 @@ public class MainActivity extends BaseAppCompatActivity {
                         loadMovies(current_page);
                     }
                 } else {
-                    Timber.d("onItemClick true");
-                    Timber.d("onItemClick "+movies.get(position).getTitle());
-                    Timber.d("onItemClick "+movies.get(position));
                     startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position).getId()));
                 }
             }
