@@ -33,8 +33,6 @@ import timber.log.Timber;
 import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class MainActivity extends BaseAppCompatActivity {
-    public static String LOAD_BEFORE_PAGE = "LOADNEXTPAGE";
-    public static String LOAD_NEXT_PAGE = "LOADNEXTPAGE";
     private Integer current_page = 1;
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
@@ -144,10 +142,10 @@ public class MainActivity extends BaseAppCompatActivity {
                     List<Movie> moviesResposnse = response.body().getResults();
                     movies.clear();
                     if (page!=1){
-                        movies.add(new Movie(LOAD_BEFORE_PAGE));
+                        movies.add(new Movie());
                     }
                     movies.addAll(moviesResposnse);
-                    movies.add(new Movie(LOAD_NEXT_PAGE));
+                    movies.add(new Movie());
                     moviesRecyclerViewAdapter.notifyDataSetChanged();
                     moviesRecyclerView.scrollToPosition(1);
 

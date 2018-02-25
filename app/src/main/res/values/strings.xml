@@ -8,6 +8,8 @@
     <string name="download_details">Downloading Details</string>
     <string name="no_internet">Turn internet on !</string>
 
+    <string name="next_page">NEXT PAGE</string>
+    <string name="previous_page">PREVIOUS PAGE</string>
 
     <string name="action_settings">Settings</string>
     <string name="action_sort">Change sort type</string>

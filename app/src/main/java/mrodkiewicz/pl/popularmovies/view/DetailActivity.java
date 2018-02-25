@@ -2,15 +2,10 @@ package mrodkiewicz.pl.popularmovies.view;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.graphics.drawable.Icon;
 import android.os.Bundle;
-import android.support.annotation.ColorInt;
-import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -100,11 +95,11 @@ public class DetailActivity extends BaseAppCompatActivity {
             case R.id.action_favourite:
                 if (isFavoutire){
                     isFavoutire = false;
-                    item.setIcon(R.drawable.ic_favorite_border_white_24dp);
+                    item.setIcon(R.drawable.ic_favorite_border_24dp);
                     item.setTitle(getString(R.string.action_favourite_false));
                 }else{
                     isFavoutire = true;
-                    item.setIcon(R.drawable.ic_favorite_white_24dp);
+                    item.setIcon(R.drawable.ic_favorite_24dp);
                     item.setTitle(getString(R.string.action_favourite_true));
                 }
                 return true;
