@@ -66,7 +66,8 @@ public class Movie {
     @Expose
     private Integer voteCount;
 
-    public Movie() {}
+    public Movie() {
+    }
 
     public Boolean getAdult() {
         return adult;

@@ -20,6 +20,7 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.api.APIService;
 import mrodkiewicz.pl.popularmovies.helpers.Config;
+import mrodkiewicz.pl.popularmovies.helpers.Favourites;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.view.base.BaseAppCompatActivity;
 import retrofit2.Call;
@@ -47,14 +48,13 @@ public class DetailActivity extends BaseAppCompatActivity {
     @BindView(R.id.activity_detail)
     LinearLayout activityDetail;
 
-
-    private APIService service;
     private Integer movieId;
     private PopularMovies popularMovies;
     private Movie movie;
     private boolean isFavoutire;
     private MenuItem menuItem;
     private Menu menu;
+    private Favourites favourites;
 
     public static Intent getConfigureIntent(Context context, Integer movieId) {
         Intent intent = new Intent(context, DetailActivity.class);
@@ -69,7 +69,7 @@ public class DetailActivity extends BaseAppCompatActivity {
         ButterKnife.bind(this);
 
         popularMovies = new PopularMovies();
-        showProgressDialog(null,getString(R.string.download_details));
+        showProgressDialog(null, getString(R.string.download_details));
 
         if (getIntent().getExtras() != null) {
             movieId = getIntent().getIntExtra(EXTRAS_MOVIE_ID, -1);
@@ -78,10 +78,9 @@ public class DetailActivity extends BaseAppCompatActivity {
             finish();
         }
 
-
-
-
-
+//        favourites = new Favourites(this);
+//        favourites.saveFavourites(10);
+//        favourites.log();
     }
 
     @Override
@@ -89,13 +88,7 @@ public class DetailActivity extends BaseAppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_activity_detail, menu);
         this.menu = menu;
         menuItem = menu.getItem(0);
-//        if(favourites.isOnList()){
-//            menuItem.setIcon(R.drawable.ic_favorite_24dp);
-//            menuItem.setTitle(getString(R.string.action_favourite_true));
-//        }else{
-//            menuItem.setIcon(R.drawable.ic_favorite_border_24dp);
-//            menuItem.setTitle(getString(R.string.action_favourite_false));
-//        }
+
         return true;
     }
 
@@ -103,11 +96,11 @@ public class DetailActivity extends BaseAppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_favourite:
-                if (isFavoutire){
+                if (isFavoutire) {
                     isFavoutire = false;
                     item.setIcon(R.drawable.ic_favorite_border_24dp);
                     item.setTitle(getString(R.string.action_favourite_false));
-                }else{
+                } else {
                     isFavoutire = true;
 //                    favourites.addFavouritesMovies(movieId);
                     item.setIcon(R.drawable.ic_favorite_24dp);
@@ -120,10 +113,10 @@ public class DetailActivity extends BaseAppCompatActivity {
     }
 
     private void loadMovies() {
+        //api
         if (isInternetEnable()) {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
-
             Call<Movie> call = apiService.getMovieDetails(movieId, API_KEY);
             call.enqueue(new Callback<Movie>() {
                 @Override
@@ -137,8 +130,8 @@ public class DetailActivity extends BaseAppCompatActivity {
                     activityDetailTitleTextview.setText(movie.getTitle());
                     activityDetailDescriptionTextView.setText(movie.getOverview());
                     activityDetailYearTextView.setText(movie.getReleaseDate());
-                    activityDetailTimelongTextView.setText(movie.getRuntime().toString());
-                    activityDetailMarkTextView.setText(movie.getVoteAverage().toString());
+                    activityDetailTimelongTextView.setText(movie.getRuntime().toString() + getString(R.string.duration_activity_detail));
+                    activityDetailMarkTextView.setText(movie.getVoteAverage().toString() + getString(R.string.rating_activity_detail));
                     Timber.d("MoviesResponse movie" + movie.toString());
 
                 }
@@ -150,21 +143,28 @@ public class DetailActivity extends BaseAppCompatActivity {
             });
             hideProgressDialog();
         } else {
+            hideProgressDialog();
             Snackbar.make(
                     findViewById(R.id.activity_main),
                     getString(R.string.no_internet),
                     Snackbar.LENGTH_INDEFINITE)
                     .show();
-            hideProgressDialog();
             showErrorToasty(getString(R.string.no_internet));
             Timber.d("MoviesResponse internet off");
         }
-
-
     }
-    public void showErrorToasty(String errorString){
+
+    public void showErrorToasty(String errorString) {
         Toasty.error(this, errorString, Toast.LENGTH_SHORT, true).show();
     }
 
+    private void setAsFavoutire() {
+        menuItem.setIcon(R.drawable.ic_favorite_border_24dp);
+        menuItem.setTitle(getString(R.string.action_favourite_false));
+    }
 
+    private void setAsNotFavourite() {
+        menuItem.setIcon(R.drawable.ic_favorite_24dp);
+        menuItem.setTitle(getString(R.string.action_favourite_true));
+    }
 }

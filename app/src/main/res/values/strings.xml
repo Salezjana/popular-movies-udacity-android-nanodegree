@@ -4,6 +4,11 @@
     <string name="settings">Settings</string>
 
 
+    <string name="duration_activity_detail"> min</string>
+    <string name="rating_activity_detail">/10</string>
+    <string name="release_activity_detail"></string>
+
+
     <string name="download_movies">Downloading Movies</string>
     <string name="download_details">Downloading Details</string>
     <string name="no_internet">Turn internet on !</string>

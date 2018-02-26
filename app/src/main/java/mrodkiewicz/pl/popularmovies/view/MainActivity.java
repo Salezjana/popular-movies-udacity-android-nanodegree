@@ -10,6 +10,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.afollestad.materialdialogs.MaterialDialog;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,10 +33,11 @@ import timber.log.Timber;
 import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class MainActivity extends BaseAppCompatActivity {
-    private Integer current_page = 1;
+
+    private static Bundle bundle;
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
-
+    private Integer current_page = 1;
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
@@ -42,6 +45,8 @@ public class MainActivity extends BaseAppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -57,11 +62,11 @@ public class MainActivity extends BaseAppCompatActivity {
         setupView();
         loadMovies(current_page);
         initListener();
-
     }
 
+
     private void setupView() {
-        moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getApplicationContext(), movies,current_page);
+        moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getApplicationContext(), movies, current_page);
         moviesRecyclerView.setAdapter(moviesRecyclerViewAdapter);
         moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -76,15 +81,15 @@ public class MainActivity extends BaseAppCompatActivity {
                 if (movies.get(position).getTitle() == null) {
                     if (position == 0) {
                         Timber.d("onItemClick false");
-                        Timber.d("onItemClick"+movies.get(position).getTitle());
-                        Timber.d("onItemClick"+movies.get(position));
+                        Timber.d("onItemClick" + movies.get(position).getTitle());
+                        Timber.d("onItemClick" + movies.get(position));
                         current_page -= 1;
                         moviesRecyclerViewAdapter.setPage(current_page);
                         loadMovies(current_page);
-                    }else {
+                    } else {
                         Timber.d("onItemClick false");
-                        Timber.d("onItemClick"+movies.get(position).getTitle());
-                        Timber.d("onItemClick"+movies.get(position));
+                        Timber.d("onItemClick" + movies.get(position).getTitle());
+                        Timber.d("onItemClick" + movies.get(position));
                         current_page += 1;
                         moviesRecyclerViewAdapter.setPage(current_page);
                         loadMovies(current_page);
@@ -101,42 +106,18 @@ public class MainActivity extends BaseAppCompatActivity {
         }));
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_activity_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_settings:
-                Favourites favourites = new Favourites(this);
-                favourites.addFavouritesMovies(1);
-                favourites.addFavouritesMovies(12);
-                favourites.addFavouritesMovies(3);
-                favourites.addFavouritesMovies(0);
-                favourites.addFavouritesMovies(-1);
-                favourites.isOnList(1);
-                favourites.LogFavouritesMovies();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
     private void loadMovies(final int page) {
         if (isInternetEnable()) {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
 
-            Call<MoviesResponse> call = apiService.getTopRatedMoviesPage(API_KEY, page);
+            Call<MoviesResponse> call = apiService.getMovies("popular", API_KEY, page);
             call.enqueue(new Callback<MoviesResponse>() {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                     List<Movie> moviesResposnse = response.body().getResults();
                     movies.clear();
-                    if (page!=1){
+                    if (page != 1) {
                         movies.add(new Movie());
                     }
                     movies.addAll(moviesResposnse);
@@ -166,5 +147,40 @@ public class MainActivity extends BaseAppCompatActivity {
 
 
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_activity_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_sort:
+                new MaterialDialog.Builder(this)
+                        .title(R.string.download_details)
+                        .items(movies)
+                        .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
+                            @Override
+                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
+                                /**
+                                 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
+                                 * returning false here won't allow the newly selected radio button to actually be selected.
+                                 **/
+                                return true;
+                            }
+                        })
+                        .positiveText(R.string.action_favourite_false)
+                        .show();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
 }

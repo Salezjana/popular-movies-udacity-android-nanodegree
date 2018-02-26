@@ -15,6 +15,7 @@ import timber.log.Timber;
 public class RecyclerViewItemClickListener implements RecyclerView.OnItemTouchListener {
     private OnItemClickListener mListener;
     private GestureDetector mGestureDetector;
+
     public RecyclerViewItemClickListener(Context context, final RecyclerView recyclerView, OnItemClickListener listener) {
         mListener = listener;
         Timber.d("constructor");

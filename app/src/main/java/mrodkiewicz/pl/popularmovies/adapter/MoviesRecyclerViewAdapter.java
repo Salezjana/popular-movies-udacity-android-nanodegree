@@ -1,7 +1,6 @@
 package mrodkiewicz.pl.popularmovies.adapter;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -30,7 +29,7 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     private String data[];
     private int page;
 
-    public MoviesRecyclerViewAdapter(Context context, List<Movie> movieList,int page) {
+    public MoviesRecyclerViewAdapter(Context context, List<Movie> movieList, int page) {
         this.movieList = movieList;
         this.context = context;
         this.page = page;
@@ -51,23 +50,23 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
         Timber.d("api poster load url: " + Config.API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movieList.get(position).getPosterPath());
 
         if (movieList.get(position).getTitle() == null) {
-            if (position == 0){
+            if (position == 0) {
                 Timber.d("last element" + position);
                 holder.textView.setText(context.getResources().getString(R.string.previous_page));
                 holder.imageView.setBackgroundColor(Color.BLACK);
                 holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_first_page_24dp));
-                holder.imageView.setPadding(0,0,0,70);
+                holder.imageView.setPadding(0, 0, 0, 70);
                 holder.imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
-            }else {
+            } else {
                 Timber.d("last element" + position);
                 holder.textView.setText(context.getResources().getString(R.string.next_page));
                 holder.imageView.setBackgroundColor(Color.BLACK);
                 holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_last_page_24dp));
-                holder.imageView.setPadding(0,0,0,70);
+                holder.imageView.setPadding(0, 0, 0, 70);
                 holder.imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             }
 
-        }else {
+        } else {
             Picasso.with(context)
                     .load(Config.API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movieList.get(position).getPosterPath())
                     .into(holder.imageView);
@@ -80,6 +79,10 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     @Override
     public int getItemCount() {
         return movieList.size();
+    }
+
+    public void setPage(int page) {
+        this.page = page;
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -95,9 +98,5 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
             cardView = (CardView) itemView.findViewById(R.id.card_view);
 
         }
-    }
-
-    public void setPage(int page) {
-        this.page = page;
     }
 }
