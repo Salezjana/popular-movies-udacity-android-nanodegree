@@ -2,6 +2,8 @@ package mrodkiewicz.pl.popularmovies.view;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.transition.BuildConfig;
 import android.support.v7.app.AlertDialog;
@@ -21,6 +23,7 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.MoviesRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
+import mrodkiewicz.pl.popularmovies.helpers.ParcelableRecyclerView;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.model.MoviesResponse;
@@ -30,25 +33,29 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
+/**
+ * Created by Mikolaj Rodkiewicz on 19.02.2018.
+ */
+
+
 import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class MainActivity extends BaseAppCompatActivity {
-    private static Bundle bundle;
+
     @BindView(R.id.movies_recycler_view)
-    RecyclerView moviesRecyclerView;
-    private Integer current_page = 1;
+    ParcelableRecyclerView moviesRecyclerView;
+
+
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
     private int sorting_state;
-    private ArrayList<String> sorting_state_list;
+    private Integer current_page = 1;
     private CharSequence[] sorting_state_array;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
@@ -75,7 +82,6 @@ public class MainActivity extends BaseAppCompatActivity {
         moviesRecyclerView.setAdapter(moviesRecyclerViewAdapter);
         moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
     }
 
     private void initListener() {

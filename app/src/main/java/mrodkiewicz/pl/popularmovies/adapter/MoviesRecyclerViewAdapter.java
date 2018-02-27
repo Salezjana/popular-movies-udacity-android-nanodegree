@@ -20,13 +20,12 @@ import mrodkiewicz.pl.popularmovies.model.Movie;
 import timber.log.Timber;
 
 /**
- * Created by pc-mikolaj on 21.02.2018.
+ * Created by Mikolaj Rodkiewicz on 21.02.2018.
  */
 
 public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecyclerViewAdapter.ViewHolder> {
     private List<Movie> movieList;
     private Context context;
-    private String data[];
     private int page;
 
     public MoviesRecyclerViewAdapter(Context context, List<Movie> movieList, int page) {
@@ -92,7 +91,6 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
 
         public ViewHolder(View itemView) {
             super(itemView);
-            Timber.d("ViewHolder constructor");
             imageView = (ImageView) itemView.findViewById(R.id.item_list_movie_imageView);
             textView = (TextView) itemView.findViewById(R.id.item_list_movie_textView);
             cardView = (CardView) itemView.findViewById(R.id.card_view);

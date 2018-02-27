@@ -9,7 +9,7 @@ import android.view.View;
 import timber.log.Timber;
 
 /**
- * Created by pc-mikolaj on 23.02.2018.
+ * Created by Mikolaj Rodkiewicz on 20.02.2018.
  */
 
 public class RecyclerViewItemClickListener implements RecyclerView.OnItemTouchListener {

@@ -3,6 +3,11 @@ package mrodkiewicz.pl.popularmovies.model;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+/**
+ * Created by Mikolaj Rodkiewicz on 19.02.2018.
+ */
+
+
 public class Movie {
 
     @SerializedName("adult")

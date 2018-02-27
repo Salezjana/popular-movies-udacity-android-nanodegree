@@ -10,7 +10,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import timber.log.Timber;
 
 /**
- * Created by pc-mikolaj on 20.02.2018.
+ * Created by Mikolaj Rodkiewicz on 20.02.2018.
  */
 
 public class PopularMovies {

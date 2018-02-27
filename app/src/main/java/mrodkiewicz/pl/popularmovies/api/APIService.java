@@ -8,7 +8,7 @@ import retrofit2.http.Path;
 import retrofit2.http.Query;
 
 /**
- * Created by pc-mikolaj on 21.02.2018.
+ * Created by Mikolaj Rodkiewicz on 21.02.2018.
  */
 
 public interface APIService {

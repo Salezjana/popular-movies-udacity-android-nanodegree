@@ -31,6 +31,12 @@ import timber.log.Timber;
 import static mrodkiewicz.pl.popularmovies.helpers.Config.API_IMAGE_URL;
 import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
+/**
+ * Created by Mikolaj Rodkiewicz on 19.02.2018.
+ */
+
+
+
 public class DetailActivity extends BaseAppCompatActivity {
     public static final String EXTRAS_MOVIE_ID = "EXTRAS_MOVIE_ID";
     @BindView(R.id.activity_detail_title_textview)
