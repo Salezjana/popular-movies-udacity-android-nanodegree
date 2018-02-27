@@ -8,6 +8,8 @@
     <string name="rating_activity_detail">/10</string>
     <string name="release_activity_detail"></string>
 
+    <string name="dialog_title">Select sorting</string>
+    <string name="dialog_button">Done</string>
 
     <string name="download_movies">Downloading Movies</string>
     <string name="download_details">Downloading Details</string>

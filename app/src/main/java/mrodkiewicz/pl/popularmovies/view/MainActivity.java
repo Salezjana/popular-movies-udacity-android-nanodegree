@@ -1,16 +1,16 @@
 package mrodkiewicz.pl.popularmovies.view;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.transition.BuildConfig;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-
-import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,7 +33,6 @@ import timber.log.Timber;
 import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class MainActivity extends BaseAppCompatActivity {
-
     private static Bundle bundle;
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
@@ -41,6 +40,9 @@ public class MainActivity extends BaseAppCompatActivity {
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
+    private int sorting_state;
+    private ArrayList<String> sorting_state_list;
+    private CharSequence[] sorting_state_array;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,8 +61,11 @@ public class MainActivity extends BaseAppCompatActivity {
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
+        sorting_state = 0;
+        sorting_state_array = new CharSequence[]{"by popular","by highest grades"};
+
         setupView();
-        loadMovies(current_page);
+        loadMovies(current_page, sorting_state);
         initListener();
     }
 
@@ -85,14 +90,14 @@ public class MainActivity extends BaseAppCompatActivity {
                         Timber.d("onItemClick" + movies.get(position));
                         current_page -= 1;
                         moviesRecyclerViewAdapter.setPage(current_page);
-                        loadMovies(current_page);
+                        loadMovies(current_page, sorting_state);
                     } else {
                         Timber.d("onItemClick false");
                         Timber.d("onItemClick" + movies.get(position).getTitle());
                         Timber.d("onItemClick" + movies.get(position));
                         current_page += 1;
                         moviesRecyclerViewAdapter.setPage(current_page);
-                        loadMovies(current_page);
+                        loadMovies(current_page, sorting_state);
                     }
                 } else {
                     startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position).getId()));
@@ -106,12 +111,17 @@ public class MainActivity extends BaseAppCompatActivity {
         }));
     }
 
-    private void loadMovies(final int page) {
+    private void loadMovies(final int page, int sorting_state) {
         if (isInternetEnable()) {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
+            Call<MoviesResponse> call;
+            if (sorting_state == 0) {
+               call = apiService.getMovies("popular", API_KEY, page);
+            }else {
+                call = apiService.getMovies("top_rated", API_KEY, page);
+            }
 
-            Call<MoviesResponse> call = apiService.getMovies("popular", API_KEY, page);
             call.enqueue(new Callback<MoviesResponse>() {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
@@ -158,23 +168,30 @@ public class MainActivity extends BaseAppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_settings:
-                return true;
             case R.id.action_sort:
-                new MaterialDialog.Builder(this)
-                        .title(R.string.download_details)
-                        .items(movies)
-                        .itemsCallbackSingleChoice(-1, new MaterialDialog.ListCallbackSingleChoice() {
-                            @Override
-                            public boolean onSelection(MaterialDialog dialog, View view, int which, CharSequence text) {
-                                /**
-                                 * If you use alwaysCallSingleChoiceCallback(), which is discussed below,
-                                 * returning false here won't allow the newly selected radio button to actually be selected.
-                                 **/
-                                return true;
+                new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.dialog_title))
+                        .setSingleChoiceItems(sorting_state_array, sorting_state, null)
+                        .setPositiveButton(getString(R.string.dialog_button), new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int whichButton) {
+                                dialog.dismiss();
+                                int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
+                                Timber.d("onClick" + selectedPosition);
+                                if (selectedPosition == 0){
+                                    if (sorting_state != selectedPosition){
+                                        current_page = 1;
+                                    }
+                                    sorting_state = selectedPosition;
+                                    loadMovies(current_page,sorting_state);
+                                }else {
+                                    if (sorting_state != selectedPosition){
+                                        current_page = 1;
+                                    }
+                                    sorting_state = selectedPosition;
+                                    loadMovies(current_page,sorting_state);
+                                }
                             }
                         })
-                        .positiveText(R.string.action_favourite_false)
                         .show();
                 return true;
             default:

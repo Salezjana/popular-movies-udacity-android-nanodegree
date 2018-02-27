@@ -5,10 +5,4 @@
         android:icon="@drawable/ic_sort_24dp"
         android:title="@string/action_sort"
         app:showAsAction="ifRoom" />
-    <item android:title="Item" />
-    <item android:title="Item" />
-    <item
-        android:id="@+id/action_settings"
-        android:title="@string/action_settings"
-        app:showAsAction="never" />
 </menu>
