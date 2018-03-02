@@ -2,6 +2,9 @@ package mrodkiewicz.pl.popularmovies.view;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.Menu;
@@ -12,10 +15,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import es.dmoral.toasty.Toasty;
 import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.api.APIService;
@@ -36,7 +39,6 @@ import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
  */
 
 
-
 public class DetailActivity extends BaseAppCompatActivity {
     public static final String EXTRAS_MOVIE_ID = "EXTRAS_MOVIE_ID";
     @BindView(R.id.activity_detail_title_textview)
@@ -53,6 +55,8 @@ public class DetailActivity extends BaseAppCompatActivity {
     TextView activityDetailDescriptionTextView;
     @BindView(R.id.activity_detail)
     LinearLayout activityDetail;
+    @BindView(R.id.activity_detail_top_layout)
+    LinearLayout activityDetailTopLayout;
 
     private Integer movieId;
     private PopularMovies popularMovies;
@@ -74,8 +78,9 @@ public class DetailActivity extends BaseAppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-        popularMovies = new PopularMovies();
         showProgressDialog(null, getString(R.string.download_details));
+
+        popularMovies = new PopularMovies();
 
         if (getIntent().getExtras() != null) {
             movieId = getIntent().getIntExtra(EXTRAS_MOVIE_ID, -1);
@@ -119,7 +124,6 @@ public class DetailActivity extends BaseAppCompatActivity {
     }
 
     private void loadMovies() {
-        //api
         if (isInternetEnable()) {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
@@ -149,20 +153,16 @@ public class DetailActivity extends BaseAppCompatActivity {
             });
             hideProgressDialog();
         } else {
-            hideProgressDialog();
             Snackbar.make(
                     findViewById(R.id.activity_main),
                     getString(R.string.no_internet),
                     Snackbar.LENGTH_INDEFINITE)
                     .show();
-            showErrorToasty(getString(R.string.no_internet));
+            hideProgressDialog();
             Timber.d("MoviesResponse internet off");
         }
     }
 
-    public void showErrorToasty(String errorString) {
-        Toasty.error(this, errorString, Toast.LENGTH_SHORT, true).show();
-    }
 
     private void setAsFavoutire() {
         menuItem.setIcon(R.drawable.ic_favorite_border_24dp);

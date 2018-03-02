@@ -49,9 +49,6 @@ public class BaseAppCompatActivity extends AppCompatActivity {
         }
     }
 
-    public Boolean isProgressDialogShow() {
-        return progressDialog.isShowing();
-    }
 
     public void hideProgressDialog() {
         progressDialog.dismiss();

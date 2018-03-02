@@ -12,6 +12,7 @@
     <string name="dialog_button">Done</string>
 
     <string name="download_movies">Downloading Movies</string>
+    <string name="download_movies_error">Error</string>
     <string name="download_details">Downloading Details</string>
     <string name="no_internet">Turn internet on !</string>
 

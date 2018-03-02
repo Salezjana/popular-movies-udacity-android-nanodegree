@@ -15,7 +15,7 @@ import timber.log.Timber;
 
 public class PopularMovies {
     public static Retrofit retrofit;
-    public static int TIMEOUT_SECONDS = 20;
+    public static int TIMEOUT_SECONDS = 10;
     public OkHttpClient client;
 
     public PopularMovies() {

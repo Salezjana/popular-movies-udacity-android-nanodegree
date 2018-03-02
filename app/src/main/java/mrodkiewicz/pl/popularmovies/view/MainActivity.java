@@ -2,8 +2,6 @@ package mrodkiewicz.pl.popularmovies.view;
 
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.transition.BuildConfig;
 import android.support.v7.app.AlertDialog;
@@ -23,7 +21,6 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.MoviesRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
-import mrodkiewicz.pl.popularmovies.helpers.ParcelableRecyclerView;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.model.MoviesResponse;
@@ -33,17 +30,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
+import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
+
 /**
  * Created by Mikolaj Rodkiewicz on 19.02.2018.
  */
 
-
-import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
-
 public class MainActivity extends BaseAppCompatActivity {
 
     @BindView(R.id.movies_recycler_view)
-    ParcelableRecyclerView moviesRecyclerView;
+    RecyclerView moviesRecyclerView;
 
 
     private ArrayList<Movie> movies;
@@ -69,7 +65,7 @@ public class MainActivity extends BaseAppCompatActivity {
         popularMovies = new PopularMovies();
 
         sorting_state = 0;
-        sorting_state_array = new CharSequence[]{"by popular","by highest grades"};
+        sorting_state_array = new CharSequence[]{"by popular", "by highest grades"};
 
         setupView();
         loadMovies(current_page, sorting_state);
@@ -123,11 +119,10 @@ public class MainActivity extends BaseAppCompatActivity {
                     popularMovies.getClient().create(APIService.class);
             Call<MoviesResponse> call;
             if (sorting_state == 0) {
-               call = apiService.getMovies("popular", API_KEY, page);
-            }else {
+                call = apiService.getMovies("popular", API_KEY, page);
+            } else {
                 call = apiService.getMovies("top_rated", API_KEY, page);
             }
-
             call.enqueue(new Callback<MoviesResponse>() {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
@@ -143,21 +138,22 @@ public class MainActivity extends BaseAppCompatActivity {
 
                     Timber.d("MoviesResponse getResults" + response.toString());
                     Timber.d("MoviesResponse getResults");
+                    hideProgressDialog();
                 }
 
                 @Override
                 public void onFailure(Call<MoviesResponse> call, Throwable t) {
                     Timber.d("MoviesResponse onFailure");
+                    hideProgressDialog();
                 }
             });
-            hideProgressDialog();
+
         } else {
             Snackbar.make(
                     findViewById(R.id.activity_main),
                     getString(R.string.no_internet),
                     Snackbar.LENGTH_INDEFINITE)
                     .show();
-            hideProgressDialog();
             Timber.d("MoviesResponse internet off");
         }
 
@@ -183,18 +179,18 @@ public class MainActivity extends BaseAppCompatActivity {
                                 dialog.dismiss();
                                 int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
                                 Timber.d("onClick" + selectedPosition);
-                                if (selectedPosition == 0){
-                                    if (sorting_state != selectedPosition){
+                                if (selectedPosition == 0) {
+                                    if (sorting_state != selectedPosition) {
                                         current_page = 1;
                                     }
                                     sorting_state = selectedPosition;
-                                    loadMovies(current_page,sorting_state);
-                                }else {
-                                    if (sorting_state != selectedPosition){
+                                    loadMovies(current_page, sorting_state);
+                                } else {
+                                    if (sorting_state != selectedPosition) {
                                         current_page = 1;
                                     }
                                     sorting_state = selectedPosition;
-                                    loadMovies(current_page,sorting_state);
+                                    loadMovies(current_page, sorting_state);
                                 }
                             }
                         })
