@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -32,7 +33,7 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 import static mrodkiewicz.pl.popularmovies.helpers.Config.API_IMAGE_URL;
-import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
+
 
 /**
  * Created by Mikolaj Rodkiewicz on 19.02.2018.
@@ -84,7 +85,7 @@ public class DetailActivity extends BaseAppCompatActivity {
 
         if (getIntent().getExtras() != null) {
             movieId = getIntent().getIntExtra(EXTRAS_MOVIE_ID, -1);
-            loadMovies();
+            loadMovie();
         } else {
             finish();
         }
@@ -123,11 +124,11 @@ public class DetailActivity extends BaseAppCompatActivity {
         }
     }
 
-    private void loadMovies() {
+    private void loadMovie() {
         if (isInternetEnable()) {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
-            Call<Movie> call = apiService.getMovieDetails(movieId, API_KEY);
+            Call<Movie> call = apiService.getMovieDetails(movieId, Config.getApiKey(this));
             call.enqueue(new Callback<Movie>() {
                 @Override
                 public void onResponse(Call<Movie> call, Response<Movie> response) {
@@ -143,22 +144,28 @@ public class DetailActivity extends BaseAppCompatActivity {
                     activityDetailTimelongTextView.setText(movie.getRuntime().toString() + getString(R.string.duration_activity_detail));
                     activityDetailMarkTextView.setText(movie.getVoteAverage().toString() + getString(R.string.rating_activity_detail));
                     Timber.d("MoviesResponse movie" + movie.toString());
+                    hideProgressDialog();
 
                 }
 
                 @Override
                 public void onFailure(Call<Movie> call, Throwable t) {
                     Timber.d("MoviesResponse onFailure");
+                    hideProgressDialog();
                 }
             });
+        }  else {
             hideProgressDialog();
-        } else {
             Snackbar.make(
-                    findViewById(R.id.activity_main),
+                    findViewById(R.id.activity_detail),
                     getString(R.string.no_internet),
                     Snackbar.LENGTH_INDEFINITE)
-                    .show();
-            hideProgressDialog();
+                    .setAction(getString(R.string.no_internet_button), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            loadMovie();
+                        }
+                    }).show();
             Timber.d("MoviesResponse internet off");
         }
     }

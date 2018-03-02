@@ -21,6 +21,7 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.MoviesRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
+import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.model.MoviesResponse;
@@ -30,7 +31,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import timber.log.Timber;
 
-import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
+
 
 /**
  * Created by Mikolaj Rodkiewicz on 19.02.2018.
@@ -38,9 +39,9 @@ import static mrodkiewicz.pl.popularmovies.helpers.Config.API_KEY;
 
 public class MainActivity extends BaseAppCompatActivity {
 
+
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
-
 
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
@@ -113,15 +114,16 @@ public class MainActivity extends BaseAppCompatActivity {
         }));
     }
 
-    private void loadMovies(final int page, int sorting_state) {
+    private void loadMovies(final int page, final int sorting_state) {
+        Timber.d("loadMovies isOnline " + isInternetEnable());
         if (isInternetEnable()) {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
             Call<MoviesResponse> call;
             if (sorting_state == 0) {
-                call = apiService.getMovies("popular", API_KEY, page);
+                call = apiService.getMovies("popular", Config.getApiKey(this), page);
             } else {
-                call = apiService.getMovies("top_rated", API_KEY, page);
+                call = apiService.getMovies("top_rated", Config.getApiKey(this), page);
             }
             call.enqueue(new Callback<MoviesResponse>() {
                 @Override
@@ -149,11 +151,18 @@ public class MainActivity extends BaseAppCompatActivity {
             });
 
         } else {
+            hideProgressDialog();
             Snackbar.make(
                     findViewById(R.id.activity_main),
                     getString(R.string.no_internet),
                     Snackbar.LENGTH_INDEFINITE)
-                    .show();
+                    .setAction(getString(R.string.no_internet_button), new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            showProgressDialog(null,getString(R.string.download_movies));
+                            loadMovies(current_page,sorting_state);
+                        }
+                    }).show();
             Timber.d("MoviesResponse internet off");
         }
 
