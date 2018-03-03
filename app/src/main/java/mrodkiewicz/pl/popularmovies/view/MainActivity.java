@@ -1,6 +1,10 @@
 package mrodkiewicz.pl.popularmovies.view;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.transition.BuildConfig;
@@ -32,16 +36,14 @@ import retrofit2.Response;
 import timber.log.Timber;
 
 
-
 /**
  * Created by Mikolaj Rodkiewicz on 19.02.2018.
  */
 
 public class MainActivity extends BaseAppCompatActivity {
-
-
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
+
 
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
@@ -49,6 +51,7 @@ public class MainActivity extends BaseAppCompatActivity {
     private int sorting_state;
     private Integer current_page = 1;
     private CharSequence[] sorting_state_array;
+    private SharedPreferences preferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,30 +63,40 @@ public class MainActivity extends BaseAppCompatActivity {
             Timber.plant(new Timber.DebugTree());
         }
 
+        preferences = this.getSharedPreferences(
+                Config.APP_SORTING_KEY, Context.MODE_PRIVATE);
 
         showProgressDialog(null, getString(R.string.download_movies));
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
-        sorting_state = 0;
+        sorting_state = preferences.getInt(Config.APP_SORTING_KEY, 0);
         sorting_state_array = new CharSequence[]{"by popular", "by highest grades"};
 
         setupView();
         loadMovies(current_page, sorting_state);
         initListener();
-    }
 
+        if (savedInstanceState != null) {
+            moviesRecyclerView.scrollToPosition(savedInstanceState.getInt("position"));
+        }
+    }
 
     private void setupView() {
         moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getApplicationContext(), movies, current_page);
         moviesRecyclerView.setAdapter(moviesRecyclerViewAdapter);
-        moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        } else {
+            moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        }
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
     private void initListener() {
         moviesRecyclerView.addOnItemTouchListener(new RecyclerViewItemClickListener(this,
                 moviesRecyclerView, new RecyclerViewItemClickListener.OnItemClickListener() {
+            @SuppressLint("BinaryOperationInTimber")
             @Override
             public void onItemClick(View view, int position) {
                 if (movies.get(position).getTitle() == null) {
@@ -114,6 +127,7 @@ public class MainActivity extends BaseAppCompatActivity {
         }));
     }
 
+    @SuppressLint("BinaryOperationInTimber")
     private void loadMovies(final int page, final int sorting_state) {
         Timber.d("loadMovies isOnline " + isInternetEnable());
         if (isInternetEnable()) {
@@ -126,6 +140,7 @@ public class MainActivity extends BaseAppCompatActivity {
                 call = apiService.getMovies("top_rated", Config.getApiKey(this), page);
             }
             call.enqueue(new Callback<MoviesResponse>() {
+                @SuppressLint("BinaryOperationInTimber")
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                     List<Movie> moviesResposnse = response.body().getResults();
@@ -159,8 +174,8 @@ public class MainActivity extends BaseAppCompatActivity {
                     .setAction(getString(R.string.no_internet_button), new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            showProgressDialog(null,getString(R.string.download_movies));
-                            loadMovies(current_page,sorting_state);
+                            showProgressDialog(null, getString(R.string.download_movies));
+                            loadMovies(current_page, sorting_state);
                         }
                     }).show();
             Timber.d("MoviesResponse internet off");
@@ -168,7 +183,6 @@ public class MainActivity extends BaseAppCompatActivity {
 
 
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -184,6 +198,7 @@ public class MainActivity extends BaseAppCompatActivity {
                         .setTitle(getString(R.string.dialog_title))
                         .setSingleChoiceItems(sorting_state_array, sorting_state, null)
                         .setPositiveButton(getString(R.string.dialog_button), new DialogInterface.OnClickListener() {
+                            @SuppressLint("BinaryOperationInTimber")
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 dialog.dismiss();
                                 int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
@@ -193,12 +208,16 @@ public class MainActivity extends BaseAppCompatActivity {
                                         current_page = 1;
                                     }
                                     sorting_state = selectedPosition;
+                                    preferences.edit().putInt(Config.APP_SORTING_KEY, sorting_state).apply();
+                                    showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 } else {
                                     if (sorting_state != selectedPosition) {
                                         current_page = 1;
                                     }
                                     sorting_state = selectedPosition;
+                                    preferences.edit().putInt(Config.APP_SORTING_KEY, sorting_state).apply();
+                                    showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 }
                             }

@@ -22,7 +22,7 @@ public class BaseAppCompatActivity extends AppCompatActivity {
         progressDialog = new ProgressDialog(this);
     }
 
-    protected boolean isInternetEnable() {
+    protected boolean isInternetEnable() throws Error {
         ConnectivityManager conMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetwork = conMgr.getActiveNetworkInfo();
         return (activeNetwork != null && activeNetwork.isConnected());

@@ -11,6 +11,8 @@ import mrodkiewicz.pl.popularmovies.R;
 
 public class Config {
     public static String API_URL = "https://api.themoviedb.org/3/";
+    public static String APP_SORTING_KEY = "PopularMoviesKey";
+    public static String APP_BUNDLE_KEY = "RecyclerViewState";
     public static String API_IMAGE_URL = "http://image.tmdb.org/t/p/";
     public static String API_IMAGE_SIZE_W154 = "/w154/";
     public static String API_IMAGE_SIZE_W185 = "/w185/";

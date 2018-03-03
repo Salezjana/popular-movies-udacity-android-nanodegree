@@ -2,9 +2,6 @@ package mrodkiewicz.pl.popularmovies.view;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.view.Menu;
@@ -13,10 +10,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -24,7 +19,6 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.api.APIService;
 import mrodkiewicz.pl.popularmovies.helpers.Config;
-import mrodkiewicz.pl.popularmovies.helpers.Favourites;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 import mrodkiewicz.pl.popularmovies.view.base.BaseAppCompatActivity;
 import retrofit2.Call;
@@ -64,8 +58,6 @@ public class DetailActivity extends BaseAppCompatActivity {
     private Movie movie;
     private boolean isFavoutire;
     private MenuItem menuItem;
-    private Menu menu;
-    private Favourites favourites;
 
     public static Intent getConfigureIntent(Context context, Integer movieId) {
         Intent intent = new Intent(context, DetailActivity.class);
@@ -98,7 +90,6 @@ public class DetailActivity extends BaseAppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_detail, menu);
-        this.menu = menu;
         menuItem = menu.getItem(0);
 
         return true;
@@ -114,7 +105,6 @@ public class DetailActivity extends BaseAppCompatActivity {
                     item.setTitle(getString(R.string.action_favourite_false));
                 } else {
                     isFavoutire = true;
-//                    favourites.addFavouritesMovies(movieId);
                     item.setIcon(R.drawable.ic_favorite_24dp);
                     item.setTitle(getString(R.string.action_favourite_true));
                 }
@@ -132,8 +122,8 @@ public class DetailActivity extends BaseAppCompatActivity {
             call.enqueue(new Callback<Movie>() {
                 @Override
                 public void onResponse(Call<Movie> call, Response<Movie> response) {
-                    Timber.d("MoviesResponse getResults" + response.toString());
-                    Timber.d("MoviesResponse getPosterPath " + response.body().getPosterPath());
+                    Timber.d("MoviesResponse getResults%s", response.toString());
+                    Timber.d("MoviesResponse getPosterPath %s", response.body().getPosterPath());
                     movie = response.body();
 
                     setTitle(movie.getTitle());
@@ -143,7 +133,7 @@ public class DetailActivity extends BaseAppCompatActivity {
                     activityDetailYearTextView.setText(movie.getReleaseDate());
                     activityDetailTimelongTextView.setText(movie.getRuntime().toString() + getString(R.string.duration_activity_detail));
                     activityDetailMarkTextView.setText(movie.getVoteAverage().toString() + getString(R.string.rating_activity_detail));
-                    Timber.d("MoviesResponse movie" + movie.toString());
+                    Timber.d("MoviesResponse movie%s", movie.toString());
                     hideProgressDialog();
 
                 }
