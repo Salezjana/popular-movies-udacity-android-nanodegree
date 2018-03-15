@@ -67,15 +67,6 @@
                         android:textSize="18sp" />
 
                     <TextView
-                        android:id="@+id/activity_detail_timelong_textView"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:gravity="center"
-                        android:padding="16dp"
-                        android:textColor="@color/colorTextWhite"
-                        android:textSize="18sp" />
-
-                    <TextView
                         android:id="@+id/activity_detail_year_textView"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"

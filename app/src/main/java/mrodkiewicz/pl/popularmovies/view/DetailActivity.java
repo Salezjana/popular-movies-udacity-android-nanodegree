@@ -42,8 +42,6 @@ public class DetailActivity extends BaseAppCompatActivity {
     ImageView activityDetailImageView;
     @BindView(R.id.activity_detail_year_textView)
     TextView activityDetailYearTextView;
-    @BindView(R.id.activity_detail_timelong_textView)
-    TextView activityDetailTimelongTextView;
     @BindView(R.id.activity_detail_mark_textView)
     TextView activityDetailMarkTextView;
     @BindView(R.id.activity_detail_description_textView)
@@ -53,15 +51,14 @@ public class DetailActivity extends BaseAppCompatActivity {
     @BindView(R.id.activity_detail_top_layout)
     LinearLayout activityDetailTopLayout;
 
-    private Integer movieId;
     private PopularMovies popularMovies;
-    private Movie movie;
+    private Movie IntentMovie,movie;
     private boolean isFavoutire;
     private MenuItem menuItem;
 
-    public static Intent getConfigureIntent(Context context, Integer movieId) {
+    public static Intent getConfigureIntent(Context context, Movie IntentMovie) {
         Intent intent = new Intent(context, DetailActivity.class);
-        intent.putExtra(EXTRAS_MOVIE_ID, movieId);
+        intent.putExtra(EXTRAS_MOVIE_ID, IntentMovie);
         return intent;
     }
 
@@ -73,11 +70,11 @@ public class DetailActivity extends BaseAppCompatActivity {
 
         showProgressDialog(null, getString(R.string.download_details));
 
-        popularMovies = new PopularMovies();
 
         if (getIntent().getExtras() != null) {
-            movieId = getIntent().getIntExtra(EXTRAS_MOVIE_ID, -1);
-            loadMovie();
+            Bundle data = getIntent().getExtras();
+            movie = (Movie) data.getParcelable(EXTRAS_MOVIE_ID);
+            loadData(movie);
         } else {
             finish();
         }
@@ -113,51 +110,14 @@ public class DetailActivity extends BaseAppCompatActivity {
                 return super.onOptionsItemSelected(item);
         }
     }
-
-    private void loadMovie() {
-        if (isInternetEnable()) {
-            APIService apiService =
-                    popularMovies.getClient().create(APIService.class);
-            Call<Movie> call = apiService.getMovieDetails(movieId, Config.API_KEY);
-            call.enqueue(new Callback<Movie>() {
-                @Override
-                public void onResponse(Call<Movie> call, Response<Movie> response) {
-                    Timber.d("MoviesResponse getResults%s", response.toString());
-                    Timber.d("MoviesResponse getPosterPath %s", response.body().getPosterPath());
-                    movie = response.body();
-
-                    setTitle(movie.getTitle());
-                    Picasso.with(getApplicationContext()).load(API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movie.getPosterPath()).into(activityDetailImageView);
-                    activityDetailTitleTextview.setText(movie.getTitle());
-                    activityDetailDescriptionTextView.setText(movie.getOverview());
-                    activityDetailYearTextView.setText(movie.getReleaseDate());
-                    activityDetailTimelongTextView.setText(movie.getRuntime().toString() + getString(R.string.duration_activity_detail));
-                    activityDetailMarkTextView.setText(movie.getVoteAverage().toString() + getString(R.string.rating_activity_detail));
-                    Timber.d("MoviesResponse movie%s", movie.toString());
-                    hideProgressDialog();
-
-                }
-
-                @Override
-                public void onFailure(Call<Movie> call, Throwable t) {
-                    Timber.d("MoviesResponse onFailure");
-                    hideProgressDialog();
-                }
-            });
-        }  else {
-            hideProgressDialog();
-            Snackbar.make(
-                    findViewById(R.id.activity_detail),
-                    getString(R.string.no_internet),
-                    Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.no_internet_button), new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            loadMovie();
-                        }
-                    }).show();
-            Timber.d("MoviesResponse internet off");
-        }
+    private void loadData(Movie movie){
+        setTitle(movie.getTitle());
+        Picasso.with(getApplicationContext()).load(API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movie.getPosterPath()).into(activityDetailImageView);
+        activityDetailTitleTextview.setText(movie.getTitle());
+        activityDetailDescriptionTextView.setText(movie.getOverview());
+        activityDetailYearTextView.setText(movie.getReleaseDate());
+        activityDetailMarkTextView.setText(movie.getVoteAverage().toString() + getString(R.string.rating_activity_detail));
+        hideProgressDialog();
     }
 
 

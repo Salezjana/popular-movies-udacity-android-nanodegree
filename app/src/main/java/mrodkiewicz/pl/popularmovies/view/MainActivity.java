@@ -116,7 +116,7 @@ public class MainActivity extends BaseAppCompatActivity {
                         loadMovies(current_page, sorting_state);
                     }
                 } else {
-                    startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position).getId()));
+                    startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position)));
                 }
             }
 
