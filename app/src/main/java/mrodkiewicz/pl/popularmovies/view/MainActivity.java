@@ -64,13 +64,13 @@ public class MainActivity extends BaseAppCompatActivity {
         }
 
         preferences = this.getSharedPreferences(
-                Config.APP_SORTING_KEY, Context.MODE_PRIVATE);
+                Config.PREFERENCES_SORTING_POSITION, Context.MODE_PRIVATE);
 
         showProgressDialog(null, getString(R.string.download_movies));
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
-        sorting_state = preferences.getInt(Config.APP_SORTING_KEY, 0);
+        sorting_state = preferences.getInt(Config.PREFERENCES_SORTING_POSITION, 0);
         sorting_state_array = new CharSequence[]{"by popular", "by highest grades"};
 
         setupView();
@@ -78,7 +78,7 @@ public class MainActivity extends BaseAppCompatActivity {
         initListener();
 
         if (savedInstanceState != null) {
-            moviesRecyclerView.scrollToPosition(savedInstanceState.getInt("position"));
+            moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION));
         }
     }
 
@@ -135,9 +135,9 @@ public class MainActivity extends BaseAppCompatActivity {
                     popularMovies.getClient().create(APIService.class);
             Call<MoviesResponse> call;
             if (sorting_state == 0) {
-                call = apiService.getMovies("popular", Config.getApiKey(this), page);
+                call = apiService.getMovies("popular", Config.API_KEY, page);
             } else {
-                call = apiService.getMovies("top_rated", Config.getApiKey(this), page);
+                call = apiService.getMovies("top_rated", Config.API_KEY, page);
             }
             call.enqueue(new Callback<MoviesResponse>() {
                 @SuppressLint("BinaryOperationInTimber")
@@ -208,7 +208,7 @@ public class MainActivity extends BaseAppCompatActivity {
                                         current_page = 1;
                                     }
                                     sorting_state = selectedPosition;
-                                    preferences.edit().putInt(Config.APP_SORTING_KEY, sorting_state).apply();
+                                    preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
                                     showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 } else {
@@ -216,7 +216,7 @@ public class MainActivity extends BaseAppCompatActivity {
                                         current_page = 1;
                                     }
                                     sorting_state = selectedPosition;
-                                    preferences.edit().putInt(Config.APP_SORTING_KEY, sorting_state).apply();
+                                    preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
                                     showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 }

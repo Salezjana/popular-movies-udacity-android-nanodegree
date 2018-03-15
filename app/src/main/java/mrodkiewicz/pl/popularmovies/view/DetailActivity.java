@@ -118,7 +118,7 @@ public class DetailActivity extends BaseAppCompatActivity {
         if (isInternetEnable()) {
             APIService apiService =
                     popularMovies.getClient().create(APIService.class);
-            Call<Movie> call = apiService.getMovieDetails(movieId, Config.getApiKey(this));
+            Call<Movie> call = apiService.getMovieDetails(movieId, Config.API_KEY);
             call.enqueue(new Callback<Movie>() {
                 @Override
                 public void onResponse(Call<Movie> call, Response<Movie> response) {
