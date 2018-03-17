@@ -6,7 +6,6 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.transition.BuildConfig;
 import android.support.v7.app.AlertDialog;
@@ -47,14 +46,11 @@ public class MainActivity extends BaseAppCompatActivity {
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
-    private int sorting_state;
-    private int recycyleview_position;
+    private int sorting_state, recycyleview_position, last_page;
     private Integer current_page = 1;
     private CharSequence[] sorting_state_array;
     private SharedPreferences preferences;
-    private GridLayoutManager gridLayoutManager;
-    private Bundle bundleRecyclerViewState;
-    private Parcelable mListState = null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,38 +65,28 @@ public class MainActivity extends BaseAppCompatActivity {
         preferences = this.getSharedPreferences(
                 Config.PREFERENCES_KEY, Context.MODE_PRIVATE);
 
+
         showProgressDialog(null, getString(R.string.download_movies));
+
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
         sorting_state = preferences.getInt(Config.PREFERENCES_SORTING_POSITION, 0);
-        recycyleview_position = preferences.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION, -1);
+        recycyleview_position = preferences.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION, 1);
+        Timber.d("recycyleview_position " + preferences.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION, -1));
 
         sorting_state_array = new CharSequence[]{"by popular", "by highest grades"};
         setupView();
-        if (savedInstanceState != null) {
-            moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION));
-        }
-        if (savedInstanceState == null || !savedInstanceState.containsKey(Config.PREFERENCES_RECYCLEVIEW_LIST)){
-            loadMovies(current_page, sorting_state);
-            Timber.d("savedInstanceState == null ");
-        }else{
-            Timber.d("savedInstanceState ==  " + savedInstanceState.getParcelableArrayList(Config.PREFERENCES_RECYCLEVIEW_LIST));
-            movies = savedInstanceState.getParcelableArrayList(Config.PREFERENCES_RECYCLEVIEW_LIST);
-        }
         initListener();
+        loadMovies(current_page, sorting_state);
 
     }
 
     private void setupView() {
+        GridAutofitLayoutManager layoutManager = new GridAutofitLayoutManager(this, 400);
         moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getApplicationContext(), movies, current_page);
         moviesRecyclerView.setAdapter(moviesRecyclerViewAdapter);
-        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            gridLayoutManager = new GridLayoutManager(this, 2);
-        } else {
-            gridLayoutManager = new GridLayoutManager(this, 4);
-        }
-        moviesRecyclerView.setLayoutManager(gridLayoutManager);
+        moviesRecyclerView.setLayoutManager(layoutManager);
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
@@ -154,15 +140,15 @@ public class MainActivity extends BaseAppCompatActivity {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                     List<Movie> moviesResposnse = response.body().getResults();
-                    movies.clear();
+                    if (movies != null){
+                        movies.clear();
+                    }
                     if (page != 1) {
                         movies.add(new Movie());
                     }
                     movies.addAll(moviesResposnse);
                     movies.add(new Movie());
                     moviesRecyclerViewAdapter.notifyDataSetChanged();
-                    moviesRecyclerView.scrollToPosition(1);
-
                     Timber.d("MoviesResponse getResults" + response.toString());
                     Timber.d("MoviesResponse getResults");
                     hideProgressDialog();
@@ -195,20 +181,16 @@ public class MainActivity extends BaseAppCompatActivity {
     }
 
     @Override
-    public void onRestoreInstanceState(Bundle savedInstanceState) {
-        Timber.d("onRestoreInstanceState ddd" + savedInstanceState.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION));
-        moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION));
+    public void onPause() {
+        super.onPause();
+
     }
-
-
     @Override
-    public void onSaveInstanceState(Bundle outState) {
-        outState.putInt(Config.PREFERENCES_RECYCLEVIEW_POSITION, gridLayoutManager.findFirstVisibleItemPosition());
-        outState.putParcelableArrayList(Config.PREFERENCES_RECYCLEVIEW_POSITION, movies);
-        Timber.d("onSaveInstanceState ddd" + gridLayoutManager.findFirstVisibleItemPosition());
-        super.onSaveInstanceState(outState);
-    }
+    public void onSaveInstanceState(Bundle savedState) {
+        super.onSaveInstanceState(savedState);
+        savedState.putParcelableArrayList(Config.PREFERENCES_RECYCLEVIEW_LIST, movies);
 
+    }
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_main, menu);

@@ -35,7 +35,7 @@ import static mrodkiewicz.pl.popularmovies.helpers.Config.API_IMAGE_URL;
  */
 
 
-public class DetailActivity extends AppCompatActivity {
+public class DetailActivity extends BaseAppCompatActivity {
     public static final String EXTRAS_MOVIE_ID = "EXTRAS_MOVIE_ID";
     @BindView(R.id.activity_detail_title_textview)
     TextView activityDetailTitleTextview;
