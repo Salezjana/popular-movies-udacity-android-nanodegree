@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -34,7 +35,7 @@ import static mrodkiewicz.pl.popularmovies.helpers.Config.API_IMAGE_URL;
  */
 
 
-public class DetailActivity extends BaseAppCompatActivity {
+public class DetailActivity extends AppCompatActivity {
     public static final String EXTRAS_MOVIE_ID = "EXTRAS_MOVIE_ID";
     @BindView(R.id.activity_detail_title_textview)
     TextView activityDetailTitleTextview;
@@ -68,8 +69,6 @@ public class DetailActivity extends BaseAppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-        showProgressDialog(null, getString(R.string.download_details));
-
 
         if (getIntent().getExtras() != null) {
             Bundle data = getIntent().getExtras();
@@ -78,10 +77,6 @@ public class DetailActivity extends BaseAppCompatActivity {
         } else {
             finish();
         }
-
-//        favourites = new Favourites(this);
-//        favourites.saveFavourites(10);
-//        favourites.log();
     }
 
     @Override
@@ -117,7 +112,6 @@ public class DetailActivity extends BaseAppCompatActivity {
         activityDetailDescriptionTextView.setText(movie.getOverview());
         activityDetailYearTextView.setText(movie.getReleaseDate());
         activityDetailMarkTextView.setText(movie.getVoteAverage().toString() + getString(R.string.rating_activity_detail));
-        hideProgressDialog();
     }
 
 
