@@ -26,12 +26,11 @@ import timber.log.Timber;
 public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecyclerViewAdapter.ViewHolder> {
     private List<Movie> movieList;
     private Context context;
-    private int page;
 
-    public MoviesRecyclerViewAdapter(Context context, List<Movie> movieList, int page) {
+
+    public MoviesRecyclerViewAdapter(Context context, List<Movie> movieList) {
         this.movieList = movieList;
         this.context = context;
-        this.page = page;
     }
 
 
@@ -76,13 +75,8 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
     }
 
     @Override
-    public int getItemCount() {
-        return movieList.size();
-    }
+    public int getItemCount() {return movieList.size();}
 
-    public void setPage(int page) {
-        this.page = page;
-    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;

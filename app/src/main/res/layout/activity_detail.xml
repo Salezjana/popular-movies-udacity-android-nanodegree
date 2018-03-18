@@ -10,7 +10,7 @@
     tools:context=".view.MainActivity">
 
 
-    <ScrollView
+    <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -88,7 +88,41 @@
                 android:textColor="@color/colorTextWhite"
                 android:textSize="18sp" />
 
+            <TextView
+                android:id="@+id/activity_detail_trailers_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="@string/acivity_detail_trailers"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorSecondary"
+                android:textSize="24sp"
+                android:textStyle="bold|italic" />
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/trailers_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" >
+
+            </android.support.v7.widget.RecyclerView>
+
+            <TextView
+                android:id="@+id/activity_detail_reviews_textView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="16dp"
+                android:text="@string/activity_detail_reviews_textview"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+                android:textColor="@color/colorSecondary"
+                android:textSize="24sp"
+                android:textStyle="bold|italic"/>
+
+            <android.support.v7.widget.RecyclerView
+                android:id="@+id/reviews_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+
         </LinearLayout>
-    </ScrollView>
+    </android.support.v4.widget.NestedScrollView>
 
 </LinearLayout>

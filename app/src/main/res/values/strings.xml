@@ -24,4 +24,7 @@
     <string name="action_sort">Change sort type</string>
     <string name="action_favourite_false">Add to favourite</string>
     <string name="action_favourite_true">Remove from favourite</string>
+    <string name="acivity_detail_trailers">Trailers</string>
+    <string name="activity_detail_trailer_button">OPEN</string>
+    <string name="activity_detail_reviews_textview">Reviews</string>
 </resources>
