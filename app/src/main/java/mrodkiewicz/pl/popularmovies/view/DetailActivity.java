@@ -68,6 +68,10 @@ public class DetailActivity extends BaseAppCompatActivity {
     RecyclerView trailersRecyclerView;
     @BindView(R.id.reviews_recycler_view)
     RecyclerView reviewsRecyclerView;
+    @BindView(R.id.activity_detail_trailers_textView)
+    TextView activityDetailTrailersTextView;
+    @BindView(R.id.activity_detail_reviews_textView)
+    TextView activityDetailReviewsTextView;
 
     private ArrayList<Trailer> trailers = new ArrayList<Trailer>();
     private ArrayList<Reviews> reviews = new ArrayList<Reviews>();
@@ -174,10 +178,15 @@ public class DetailActivity extends BaseAppCompatActivity {
                 @Override
                 public void onResponse(Call<TrailersResponse> call, Response<TrailersResponse> response) {
                     List<Trailer> trailersResponse = response.body().getResults();
-                    trailers.clear();
-                    trailers.addAll(trailersResponse);
-                    trailersRecyclerViewAdapter.notifyDataSetChanged();
-                    trailersRecyclerView.scrollToPosition(0);
+                    if (trailersResponse.isEmpty()) {
+                        activityDetailTrailersTextView.setVisibility(View.INVISIBLE);
+                    } else {
+                        trailers.clear();
+                        trailers.addAll(trailersResponse);
+                        trailersRecyclerViewAdapter.notifyDataSetChanged();
+                        trailersRecyclerView.scrollToPosition(0);
+                    }
+
                 }
 
                 @Override
@@ -191,10 +200,16 @@ public class DetailActivity extends BaseAppCompatActivity {
                 @Override
                 public void onResponse(Call<ReviewsResponse> call, Response<ReviewsResponse> response) {
                     List<Reviews> reviewsResponse = response.body().getResults();
-                    reviews.clear();
-                    reviews.addAll(reviewsResponse);
-                    reviewsRecyclerViewAdapter.notifyDataSetChanged();
-                    reviewsRecyclerView.scrollToPosition(0);
+                    if (reviewsResponse.isEmpty()) {
+                        activityDetailReviewsTextView.setVisibility(View.INVISIBLE);
+                    } else {
+                        reviews.clear();
+                        reviews.addAll(reviewsResponse);
+                        reviewsRecyclerViewAdapter.notifyDataSetChanged();
+                        reviewsRecyclerView.scrollToPosition(0);
+                    }
+
+
                 }
 
                 @Override
