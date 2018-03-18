@@ -83,10 +83,13 @@ public class MainActivity extends BaseAppCompatActivity {
     }
 
     private void setupView() {
-        GridAutofitLayoutManager layoutManager = new GridAutofitLayoutManager(this, 400);
         moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(getApplicationContext(), movies, current_page);
         moviesRecyclerView.setAdapter(moviesRecyclerViewAdapter);
-        moviesRecyclerView.setLayoutManager(layoutManager);
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+        } else {
+            moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+        }
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
     }
 
@@ -140,7 +143,7 @@ public class MainActivity extends BaseAppCompatActivity {
                 @Override
                 public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
                     List<Movie> moviesResposnse = response.body().getResults();
-                    if (movies != null){
+                    if (movies != null) {
                         movies.clear();
                     }
                     if (page != 1) {
@@ -181,16 +184,22 @@ public class MainActivity extends BaseAppCompatActivity {
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        // TODO Auto-generated method stub
+        super.onRestoreInstanceState(savedInstanceState);
+        if (savedInstanceState != null) {
+            movies = savedInstanceState.getParcelableArrayList(Config.PREFERENCES_RECYCLEVIEW_LIST);
+            moviesRecyclerViewAdapter.notifyDataSetChanged();
+        }
     }
+
     @Override
     public void onSaveInstanceState(Bundle savedState) {
         super.onSaveInstanceState(savedState);
         savedState.putParcelableArrayList(Config.PREFERENCES_RECYCLEVIEW_LIST, movies);
 
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_main, menu);
