@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
 import android.support.transition.BuildConfig;
 import android.support.v7.app.AlertDialog;
@@ -50,6 +51,8 @@ public class MainActivity extends BaseAppCompatActivity {
     private Integer current_page = 1;
     private CharSequence[] sorting_state_array;
     private SharedPreferences preferences;
+    private GridLayoutManager gridLayoutManager;
+    private Parcelable state;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,16 +67,14 @@ public class MainActivity extends BaseAppCompatActivity {
         preferences = this.getSharedPreferences(
                 Config.PREFERENCES_KEY, Context.MODE_PRIVATE);
 
-
         showProgressDialog(null, getString(R.string.download_movies));
 
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
         sorting_state = preferences.getInt(Config.PREFERENCES_SORTING_POSITION, 0);
-        Timber.d("recycyleview_position " + preferences.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION, -1));
-
         sorting_state_array = new CharSequence[]{"by popular", "by highest grades"};
+
         setupView();
         initListener();
         loadMovies(current_page, sorting_state);
@@ -84,11 +85,13 @@ public class MainActivity extends BaseAppCompatActivity {
         moviesRecyclerViewAdapter = new MoviesRecyclerViewAdapter(this, movies);
         moviesRecyclerView.setAdapter(moviesRecyclerViewAdapter);
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
-            moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 2));
+            gridLayoutManager = new GridLayoutManager(this, 2);
         } else {
-            moviesRecyclerView.setLayoutManager(new GridLayoutManager(this, 4));
+           gridLayoutManager = new GridLayoutManager(this, 4);
         }
+        moviesRecyclerView.setLayoutManager(gridLayoutManager);
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
+        gridLayoutManager.onRestoreInstanceState(state);
     }
 
     private void initListener() {
@@ -176,6 +179,20 @@ public class MainActivity extends BaseAppCompatActivity {
 
 
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        Timber.d("onPause");
+        state = gridLayoutManager.onSaveInstanceState();
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        Timber.d("onRestoreInstanceState");
+    }
+
 
 
     @Override
