@@ -17,6 +17,7 @@ public class Config {
     public static String API_IMAGE_SIZE_W324 = "/w324/";
     public static String PREFERENCES_KEY = "PopularMoviesKey";
     public static String PREFERENCES_SORTING_POSITION = "PopularMoviesKeySorting";
-    public static String PREFERENCES_RECYCLEVIEW_POSITION = "PREFERENCES_SORTING";
-    public static String PREFERENCES_RECYCLEVIEW_LIST = "PREFERENCES_LIST";
+    public static String RECYCLEVIEW_POSITION_KEY = "RECYCLEVIEW_POSITION_KEY";
+    public static String RECYCLEVIEW_LIST_KEY = "RECYCLEVIEW_LIST_KEY";
+    public static String RECYCLEVIEW_PAGE_KEY = "RECYCLEVIEW_PAGE_KEY";
 }

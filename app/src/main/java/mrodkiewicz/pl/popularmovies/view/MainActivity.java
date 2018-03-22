@@ -48,7 +48,7 @@ public class MainActivity extends BaseAppCompatActivity {
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
     private int sorting_state, last_page;
-    private Integer current_page = 1;
+    private Integer current_page;
     private CharSequence[] sorting_state_array;
     private SharedPreferences preferences;
     private GridLayoutManager gridLayoutManager;
@@ -80,13 +80,16 @@ public class MainActivity extends BaseAppCompatActivity {
         initListener();
 
         if (savedInstanceState != null) {
-            movies = savedInstanceState.getParcelableArrayList(Config.PREFERENCES_RECYCLEVIEW_LIST);
-            moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION));
+            movies.clear();
+            movies.addAll(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
+            moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.RECYCLEVIEW_POSITION_KEY));
             moviesRecyclerViewAdapter.notifyDataSetChanged();
+            current_page = savedInstanceState.getInt(Config.RECYCLEVIEW_PAGE_KEY);
             hideProgressDialog();
         } else {
-
+            current_page = 1;
             loadMovies(current_page, sorting_state);
+
         }
 
     }
@@ -198,16 +201,18 @@ public class MainActivity extends BaseAppCompatActivity {
     }
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putParcelableArrayList(Config.PREFERENCES_RECYCLEVIEW_LIST, movies);
-        savedInstanceState.putInt(Config.PREFERENCES_RECYCLEVIEW_POSITION, gridLayoutManager.findFirstVisibleItemPosition());
+        savedInstanceState.putParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY, movies);
+        savedInstanceState.putInt(Config.RECYCLEVIEW_POSITION_KEY, gridLayoutManager.findFirstVisibleItemPosition());
+        savedInstanceState.putInt(Config.RECYCLEVIEW_PAGE_KEY, current_page);
         Timber.d("onRestoreInstanceState");
         super.onSaveInstanceState(savedInstanceState);
     }
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        movies = savedInstanceState.getParcelableArrayList(Config.PREFERENCES_RECYCLEVIEW_LIST);
-        moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.PREFERENCES_RECYCLEVIEW_POSITION));
+        movies = savedInstanceState.getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY);
+        current_page = savedInstanceState.getInt(Config.RECYCLEVIEW_PAGE_KEY);
+        moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.RECYCLEVIEW_POSITION_KEY));
         moviesRecyclerViewAdapter.notifyDataSetChanged();
         Timber.d("onRestoreInstanceState");
     }
