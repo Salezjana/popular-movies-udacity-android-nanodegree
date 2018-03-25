@@ -53,19 +53,14 @@ public class Config {
 
     public static String DATABASE_CREATE = "CREATE TABLE " + Config.TABLE_MOVIE + "("
             + Config.KEY_ID + " INTEGER NOT NULL PRIMARY KEY,"
-            + Config.KEY_MOVIE_ID + " TEXT NOT NULL,"
+            + Config.KEY_MOVIE_ID + " INTEGER NOT NULL,"
             + Config.KEY_MOVIE_TITLE + " TEXT NOT NULL,"
-            + Config.KEY_MOVIE_ADULT + " TEXT,"
             + Config.KEY_MOVIE_OVERVIEW + " TEXT,"
-            + Config.KEY_MOVIE_POPULARITY + " REAL,"
             + Config.KEY_MOVIE_VOTEAVERAGE + " REAL,"
-            + Config.KEY_MOVIE_VOTECOUNT + " INTEGER,"
-            + Config.KEY_MOVIE_BACKDROPPATH + " TEXT,"
             + Config.KEY_MOVIE_POSTERPATH + " TEXT,"
             + Config.KEY_MOVIE_RELEASEDATE + " TEXT,"
             + Config.KEY_MOVIE_VIDEOS + " TEXT,"
             + Config.KEY_MOVIE_REVIEWS + " TEXT,"
-            + Config.KEY_MOVIE_BUDGET + " TEXT,"
             + Config.KEY_MOVIE_FAVOURITE + " INTEGER NOT NULL DEFAULT 0,"
             + "UNIQUE (" + Config.KEY_MOVIE_ID + ") ON CONFLICT REPLACE)";
 

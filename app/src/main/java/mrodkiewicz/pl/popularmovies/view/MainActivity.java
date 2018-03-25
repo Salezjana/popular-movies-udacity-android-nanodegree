@@ -26,6 +26,7 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.MoviesRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
+import mrodkiewicz.pl.popularmovies.db.FavouritesMoviesDatebaseHandler;
 import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
@@ -53,6 +54,7 @@ public class MainActivity extends BaseAppCompatActivity {
     private SharedPreferences preferences;
     private GridLayoutManager gridLayoutManager;
     private Parcelable state;
+    private FavouritesMoviesDatebaseHandler favouritesMoviesDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,9 @@ public class MainActivity extends BaseAppCompatActivity {
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
+        favouritesMoviesDB = new FavouritesMoviesDatebaseHandler(this);
+        ArrayList<Movie> tmpMovies = favouritesMoviesDB.getAllMovies();
+        Timber.d("uga buga " + tmpMovies.toString());
 
         sorting_state = preferences.getInt(Config.PREFERENCES_SORTING_POSITION, 0);
         sorting_state_array = new CharSequence[]{"by popular", "by highest grades"};
@@ -100,7 +105,7 @@ public class MainActivity extends BaseAppCompatActivity {
         if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
             gridLayoutManager = new GridLayoutManager(this, 2);
         } else {
-           gridLayoutManager = new GridLayoutManager(this, 4);
+            gridLayoutManager = new GridLayoutManager(this, 4);
         }
         moviesRecyclerView.setLayoutManager(gridLayoutManager);
         moviesRecyclerView.setItemAnimator(new DefaultItemAnimator());
@@ -199,6 +204,7 @@ public class MainActivity extends BaseAppCompatActivity {
         Timber.d("onPause");
         state = gridLayoutManager.onSaveInstanceState();
     }
+
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
         savedInstanceState.putParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY, movies);
@@ -207,6 +213,7 @@ public class MainActivity extends BaseAppCompatActivity {
         Timber.d("onRestoreInstanceState");
         super.onSaveInstanceState(savedInstanceState);
     }
+
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
@@ -216,8 +223,6 @@ public class MainActivity extends BaseAppCompatActivity {
         moviesRecyclerViewAdapter.notifyDataSetChanged();
         Timber.d("onRestoreInstanceState");
     }
-
-
 
 
     @Override

@@ -88,6 +88,15 @@ public class Movie implements Parcelable {
     public Movie() {
     }
 
+    public Movie(Integer id, String overview, String posterPath, String releaseDate, String title, Double voteAverage) {
+        this.id = id;
+        this.overview = overview;
+        this.posterPath = posterPath;
+        this.releaseDate = releaseDate;
+        this.title = title;
+        this.voteAverage = voteAverage;
+    }
+
     protected Movie(Parcel in) {
         byte tmpAdult = in.readByte();
         adult = tmpAdult == 0 ? null : tmpAdult == 1;
