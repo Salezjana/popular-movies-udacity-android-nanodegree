@@ -53,6 +53,7 @@ public class MainActivity extends BaseAppCompatActivity {
     private CharSequence[] sorting_state_array;
     private SharedPreferences preferences;
     private GridLayoutManager gridLayoutManager;
+    private ArrayList<Movie> favouritesMovies;
     private Parcelable state;
     private FavouritesMoviesDatebaseHandler favouritesMoviesDB;
 
@@ -75,11 +76,10 @@ public class MainActivity extends BaseAppCompatActivity {
         popularMovies = new PopularMovies();
 
         favouritesMoviesDB = new FavouritesMoviesDatebaseHandler(this);
-        ArrayList<Movie> tmpMovies = favouritesMoviesDB.getAllMovies();
-        Timber.d("uga buga " + tmpMovies.toString());
+        favouritesMovies = favouritesMoviesDB.getAllMovies();
 
         sorting_state = preferences.getInt(Config.PREFERENCES_SORTING_POSITION, 0);
-        sorting_state_array = new CharSequence[]{"by popular", "by highest grades"};
+        sorting_state_array = new CharSequence[]{"by popular", "by highest grades", "favourites"};
 
         setupView();
         initListener();
@@ -146,55 +146,63 @@ public class MainActivity extends BaseAppCompatActivity {
 
     private void loadMovies(final int page, final int sorting_state) {
         Timber.d("loadMovies isOnline " + isInternetEnable());
-        if (isInternetEnable()) {
-            APIService apiService =
-                    popularMovies.getClient().create(APIService.class);
-            Call<MoviesResponse> call;
-            if (sorting_state == 0) {
-                call = apiService.getMovies("popular", Config.API_KEY, page);
-            } else {
-                call = apiService.getMovies("top_rated", Config.API_KEY, page);
-            }
-            call.enqueue(new Callback<MoviesResponse>() {
-                @SuppressLint("BinaryOperationInTimber")
-                @Override
-                public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
-                    List<Movie> moviesResposnse = response.body().getResults();
-                    movies.clear();
-                    if (page != 1) {
-                        movies.add(new Movie());
-                    }
-                    movies.addAll(moviesResposnse);
-                    movies.add(new Movie());
-                    moviesRecyclerViewAdapter.notifyDataSetChanged();
-                    moviesRecyclerView.scrollToPosition(0);
-                    Timber.d("MoviesResponse getResults" + response.toString());
-                    hideProgressDialog();
-                }
-
-                @Override
-                public void onFailure(Call<MoviesResponse> call, Throwable t) {
-                    Timber.d("MoviesResponse onFailure");
-                    hideProgressDialog();
-                }
-            });
-
-        } else {
+        if (sorting_state == 2) {
+            movies.clear();
+            movies.addAll(favouritesMovies);
+            moviesRecyclerViewAdapter.notifyDataSetChanged();
+            moviesRecyclerView.scrollToPosition(0);
             hideProgressDialog();
-            Snackbar.make(
-                    findViewById(R.id.activity_main),
-                    getString(R.string.no_internet),
-                    Snackbar.LENGTH_INDEFINITE)
-                    .setAction(getString(R.string.no_internet_button), new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            showProgressDialog(null, getString(R.string.download_movies));
-                            loadMovies(current_page, sorting_state);
+        } else {
+            if (isInternetEnable()) {
+                APIService apiService =
+                        popularMovies.getClient().create(APIService.class);
+                Call<MoviesResponse> call;
+                if (sorting_state == 0) {
+                    call = apiService.getMovies("popular", Config.API_KEY, page);
+                } else {
+                    call = apiService.getMovies("top_rated", Config.API_KEY, page);
+                }
+                call.enqueue(new Callback<MoviesResponse>() {
+                    @SuppressLint("BinaryOperationInTimber")
+                    @Override
+                    public void onResponse(Call<MoviesResponse> call, Response<MoviesResponse> response) {
+                        List<Movie> moviesResposnse = response.body().getResults();
+                        movies.clear();
+                        if (page != 1) {
+                            movies.add(new Movie());
                         }
-                    }).show();
-            Timber.d("MoviesResponse internet off");
-        }
+                        movies.addAll(moviesResposnse);
+                        movies.add(new Movie());
+                        moviesRecyclerViewAdapter.notifyDataSetChanged();
+                        moviesRecyclerView.scrollToPosition(0);
+                        Timber.d("MoviesResponse getResults" + response.toString());
+                        hideProgressDialog();
+                    }
 
+                    @Override
+                    public void onFailure(Call<MoviesResponse> call, Throwable t) {
+                        Timber.d("MoviesResponse onFailure");
+                        hideProgressDialog();
+                    }
+                });
+
+
+            } else{
+                hideProgressDialog();
+                Snackbar.make(
+                        findViewById(R.id.activity_main),
+                        getString(R.string.no_internet),
+                        Snackbar.LENGTH_INDEFINITE)
+                        .setAction(getString(R.string.no_internet_button), new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                showProgressDialog(null, getString(R.string.download_movies));
+                                loadMovies(current_page, sorting_state);
+                            }
+                        }).show();
+                Timber.d("MoviesResponse internet off");
+            }
+        }
 
     }
 
@@ -252,10 +260,15 @@ public class MainActivity extends BaseAppCompatActivity {
                                     preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
                                     showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
-                                } else {
+                                } else if (selectedPosition == 1) {
                                     if (sorting_state != selectedPosition) {
                                         current_page = 1;
                                     }
+                                    sorting_state = selectedPosition;
+                                    preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
+                                    showProgressDialog(null, getString(R.string.download_movies));
+                                    loadMovies(current_page, sorting_state);
+                                } else {
                                     sorting_state = selectedPosition;
                                     preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
                                     showProgressDialog(null, getString(R.string.download_movies));
