@@ -18,6 +18,7 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -27,6 +28,7 @@ import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.ReviewsRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.adapter.TrailersRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
+import mrodkiewicz.pl.popularmovies.db.FavouritesMoviesDatebaseHandler;
 import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
@@ -79,6 +81,8 @@ public class DetailActivity extends BaseAppCompatActivity {
     private Movie movie;
     private boolean isFavoutire;
     private MenuItem menuItem;
+    private FavouritesMoviesDatebaseHandler favouritesMoviesDatebaseHandler;
+    private ArrayList<Movie> favouritesMovies;
     private TrailersRecyclerViewAdapter trailersRecyclerViewAdapter;
     private ReviewsRecyclerViewAdapter reviewsRecyclerViewAdapter;
 
@@ -95,10 +99,11 @@ public class DetailActivity extends BaseAppCompatActivity {
         setContentView(R.layout.activity_detail);
         ButterKnife.bind(this);
 
-
         if (getIntent().getExtras() != null) {
             Bundle data = getIntent().getExtras();
             movie = (Movie) data.getParcelable(EXTRAS_MOVIE_ID);
+            favouritesMoviesDatebaseHandler = new FavouritesMoviesDatebaseHandler(this);
+            favouritesMovies = favouritesMoviesDatebaseHandler.getAllMovies();
             loadData(movie);
             setupView();
             initListener();
@@ -148,13 +153,20 @@ public class DetailActivity extends BaseAppCompatActivity {
         switch (item.getItemId()) {
             case R.id.action_favourite:
                 if (isFavoutire) {
+                    Timber.d("isFavoutire was = true");
                     isFavoutire = false;
                     item.setIcon(R.drawable.ic_favorite_border_24dp);
                     item.setTitle(getString(R.string.action_favourite_false));
+                    favouritesMoviesDatebaseHandler.deleteMovie(movie);
+                    Timber.d("isFavoutire = false");
+
                 } else {
+                    Timber.d("isFavoutire was = false");
                     isFavoutire = true;
                     item.setIcon(R.drawable.ic_favorite_24dp);
                     item.setTitle(getString(R.string.action_favourite_true));
+                    favouritesMoviesDatebaseHandler.addMovie(movie);
+                    Timber.d("isFavoutire = true");
                 }
                 return true;
             default:
@@ -163,12 +175,20 @@ public class DetailActivity extends BaseAppCompatActivity {
     }
 
     private void loadData(final Movie movie) {
-        setTitle(movie.getTitle());
+        if (movie.getTitle() != null){
+            setTitle(movie.getTitle());
+            activityDetailTitleTextview.setText(movie.getTitle());
+        }
         Picasso.with(getApplicationContext()).load(API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movie.getPosterPath()).into(activityDetailImageView);
-        activityDetailTitleTextview.setText(movie.getTitle());
-        activityDetailDescriptionTextView.setText(movie.getOverview());
-        activityDetailYearTextView.setText(movie.getReleaseDate());
-        activityDetailMarkTextView.setText(movie.getVoteAverage().toString() + getString(R.string.rating_activity_detail));
+        if (movie.getOverview() != null){
+            activityDetailDescriptionTextView.setText(movie.getOverview());
+        }
+        if (movie.getReleaseDate() != null){
+            activityDetailYearTextView.setText(movie.getReleaseDate());
+        }
+        if (movie.getVoteAverage() != null){
+            activityDetailMarkTextView.setText(movie.getVoteAverage().toString() + getString(R.string.rating_activity_detail));
+        }
         if (isInternetEnable()) {
             popularMovies = new PopularMovies();
             APIService apiService =
@@ -242,5 +262,13 @@ public class DetailActivity extends BaseAppCompatActivity {
     private void setAsNotFavourite() {
         menuItem.setIcon(R.drawable.ic_favorite_24dp);
         menuItem.setTitle(getString(R.string.action_favourite_true));
+    }
+
+    private boolean isFavoutire(Movie movie){
+        if (Arrays.asList(favouritesMovies).contains(movie)){
+            return true;
+        }else{
+            return false;
+        }
     }
 }

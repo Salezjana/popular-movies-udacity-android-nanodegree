@@ -76,7 +76,7 @@ public class MainActivity extends BaseAppCompatActivity {
         popularMovies = new PopularMovies();
 
         favouritesMoviesDB = new FavouritesMoviesDatebaseHandler(this);
-        favouritesMovies = favouritesMoviesDB.getAllMovies();
+
 
         sorting_state = preferences.getInt(Config.PREFERENCES_SORTING_POSITION, 0);
         sorting_state_array = new CharSequence[]{"by popular", "by highest grades", "favourites"};
@@ -85,12 +85,17 @@ public class MainActivity extends BaseAppCompatActivity {
         initListener();
 
         if (savedInstanceState != null) {
-            movies.clear();
-            movies.addAll(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
-            moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.RECYCLEVIEW_POSITION_KEY));
-            moviesRecyclerViewAdapter.notifyDataSetChanged();
-            current_page = savedInstanceState.getInt(Config.RECYCLEVIEW_PAGE_KEY);
-            hideProgressDialog();
+            if (sorting_state != 2) {
+                movies.clear();
+                movies.addAll(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
+                moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.RECYCLEVIEW_POSITION_KEY));
+                moviesRecyclerViewAdapter.notifyDataSetChanged();
+                current_page = savedInstanceState.getInt(Config.RECYCLEVIEW_PAGE_KEY);
+                hideProgressDialog();
+            }else {
+                current_page = 1;
+                loadMovies(current_page, sorting_state);
+            }
         } else {
             current_page = 1;
             loadMovies(current_page, sorting_state);
@@ -147,6 +152,7 @@ public class MainActivity extends BaseAppCompatActivity {
     private void loadMovies(final int page, final int sorting_state) {
         Timber.d("loadMovies isOnline " + isInternetEnable());
         if (sorting_state == 2) {
+            favouritesMovies = favouritesMoviesDB.getAllMovies();
             movies.clear();
             movies.addAll(favouritesMovies);
             moviesRecyclerViewAdapter.notifyDataSetChanged();
@@ -187,7 +193,7 @@ public class MainActivity extends BaseAppCompatActivity {
                 });
 
 
-            } else{
+            } else {
                 hideProgressDialog();
                 Snackbar.make(
                         findViewById(R.id.activity_main),
@@ -269,6 +275,7 @@ public class MainActivity extends BaseAppCompatActivity {
                                     showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 } else {
+                                    movies.clear();
                                     sorting_state = selectedPosition;
                                     preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
                                     showProgressDialog(null, getString(R.string.download_movies));
