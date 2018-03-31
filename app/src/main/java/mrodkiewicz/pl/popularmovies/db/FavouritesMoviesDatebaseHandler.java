@@ -89,5 +89,15 @@ public class FavouritesMoviesDatebaseHandler extends SQLiteOpenHelper {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         sqLiteDatabase.delete(Config.TABLE_MOVIE, Config.KEY_MOVIE_ID + "=" + movie.getId(), null);
     }
+    public boolean isInDatabase(int id){
+        boolean isInDatabase = false;
+        ArrayList<Movie> movies = getAllMovies();
+        for (Movie movie: movies){
+            if (id == movie.getId()){
+                isInDatabase = true;
+            }
+        }
+        return isInDatabase;
+    }
 
 }

@@ -144,7 +144,15 @@ public class DetailActivity extends BaseAppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_detail, menu);
         menuItem = menu.getItem(0);
-
+        if (favouritesMoviesDatebaseHandler.isInDatabase(movie.getId())) {
+            isFavoutire = true;
+            menuItem.setIcon(R.drawable.ic_favorite_24dp);
+            menuItem.setTitle(getString(R.string.action_favourite_true));
+        } else {
+            menuItem.setIcon(R.drawable.ic_favorite_border_24dp);
+            menuItem.setTitle(getString(R.string.action_favourite_false));
+            Timber.d("isFavoutire = false");
+        }
         return true;
     }
 
@@ -264,11 +272,4 @@ public class DetailActivity extends BaseAppCompatActivity {
         menuItem.setTitle(getString(R.string.action_favourite_true));
     }
 
-    private boolean isFavoutire(Movie movie){
-        if (Arrays.asList(favouritesMovies).contains(movie)){
-            return true;
-        }else{
-            return false;
-        }
-    }
 }
