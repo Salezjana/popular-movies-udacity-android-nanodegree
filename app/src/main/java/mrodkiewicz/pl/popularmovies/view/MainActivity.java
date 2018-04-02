@@ -53,7 +53,6 @@ public class MainActivity extends BaseAppCompatActivity {
     private CharSequence[] sorting_state_array;
     private SharedPreferences preferences;
     private GridLayoutManager gridLayoutManager;
-    private ArrayList<Movie> favouritesMovies;
     private Parcelable state;
     private FavouritesMoviesDatebaseHandler favouritesMoviesDB;
 
@@ -66,6 +65,7 @@ public class MainActivity extends BaseAppCompatActivity {
         if (BuildConfig.DEBUG) {
             Timber.plant(new Timber.DebugTree());
         }
+        Timber.d("onCreate");
 
         preferences = this.getSharedPreferences(
                 Config.PREFERENCES_KEY, Context.MODE_PRIVATE);
@@ -84,12 +84,11 @@ public class MainActivity extends BaseAppCompatActivity {
         setupView();
         initListener();
 
-        if (savedInstanceState != null) {
+        if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             if (sorting_state != 2) {
                 movies.clear();
-                movies.addAll(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
+                updateMoviesList(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
                 moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.RECYCLEVIEW_POSITION_KEY));
-                moviesRecyclerViewAdapter.notifyDataSetChanged();
                 current_page = savedInstanceState.getInt(Config.RECYCLEVIEW_PAGE_KEY);
                 hideProgressDialog();
             }else {
@@ -152,10 +151,8 @@ public class MainActivity extends BaseAppCompatActivity {
     private void loadMovies(final int page, final int sorting_state) {
         Timber.d("loadMovies isOnline " + isInternetEnable());
         if (sorting_state == 2) {
-            favouritesMovies = favouritesMoviesDB.getAllMovies();
             movies.clear();
-            movies.addAll(favouritesMovies);
-            moviesRecyclerViewAdapter.notifyDataSetChanged();
+            updateMoviesList(favouritesMoviesDB.getAllMovies());
             moviesRecyclerView.scrollToPosition(0);
             hideProgressDialog();
         } else {
@@ -177,9 +174,8 @@ public class MainActivity extends BaseAppCompatActivity {
                         if (page != 1) {
                             movies.add(new Movie());
                         }
-                        movies.addAll(moviesResposnse);
+                        updateMoviesList(moviesResposnse);
                         movies.add(new Movie());
-                        moviesRecyclerViewAdapter.notifyDataSetChanged();
                         moviesRecyclerView.scrollToPosition(0);
                         Timber.d("MoviesResponse getResults" + response.toString());
                         hideProgressDialog();
@@ -231,10 +227,10 @@ public class MainActivity extends BaseAppCompatActivity {
     @Override
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
-        movies = savedInstanceState.getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY);
         current_page = savedInstanceState.getInt(Config.RECYCLEVIEW_PAGE_KEY);
+        movies.clear();
+        updateMoviesList(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
         moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.RECYCLEVIEW_POSITION_KEY));
-        moviesRecyclerViewAdapter.notifyDataSetChanged();
         Timber.d("onRestoreInstanceState");
     }
 
@@ -257,7 +253,7 @@ public class MainActivity extends BaseAppCompatActivity {
                             public void onClick(DialogInterface dialog, int whichButton) {
                                 dialog.dismiss();
                                 int selectedPosition = ((AlertDialog) dialog).getListView().getCheckedItemPosition();
-                                Timber.d("onClick" + selectedPosition);
+
                                 if (selectedPosition == 0) {
                                     if (sorting_state != selectedPosition) {
                                         current_page = 1;
@@ -275,12 +271,12 @@ public class MainActivity extends BaseAppCompatActivity {
                                     showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 } else {
-                                    movies.clear();
                                     sorting_state = selectedPosition;
                                     preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
                                     showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 }
+                                Timber.d("sorting_state " + sorting_state);
                             }
                         })
                         .show();
@@ -288,6 +284,11 @@ public class MainActivity extends BaseAppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void updateMoviesList(List<Movie> newMovies){
+        movies.addAll(newMovies);
+        moviesRecyclerViewAdapter.notifyDataSetChanged();
     }
 
 
