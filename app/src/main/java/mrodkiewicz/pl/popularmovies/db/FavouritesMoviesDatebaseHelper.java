@@ -15,10 +15,10 @@ import mrodkiewicz.pl.popularmovies.model.Movie;
  * Created by pc-mikolaj on 24.03.2018.
  */
 
-public class FavouritesMoviesDatebaseHandler extends SQLiteOpenHelper {
+public class FavouritesMoviesDatebaseHelper extends SQLiteOpenHelper {
     private Context context;
 
-    public FavouritesMoviesDatebaseHandler(Context context) {
+    public FavouritesMoviesDatebaseHelper(Context context) {
         super(context, Config.DATABASE_NAME, null, Config.DATABASE_VERSION);
         this.context = context;
     }

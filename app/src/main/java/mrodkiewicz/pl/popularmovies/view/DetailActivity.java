@@ -18,7 +18,6 @@ import android.widget.TextView;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -28,7 +27,7 @@ import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.ReviewsRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.adapter.TrailersRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
-import mrodkiewicz.pl.popularmovies.db.FavouritesMoviesDatebaseHandler;
+import mrodkiewicz.pl.popularmovies.db.FavouritesMoviesDatebaseHelper;
 import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
@@ -81,7 +80,7 @@ public class DetailActivity extends BaseAppCompatActivity {
     private Movie movie;
     private boolean isFavoutire;
     private MenuItem menuItem;
-    private FavouritesMoviesDatebaseHandler favouritesMoviesDatebaseHandler;
+    private FavouritesMoviesDatebaseHelper favouritesMoviesDatebaseHandler;
     private ArrayList<Movie> favouritesMovies;
     private TrailersRecyclerViewAdapter trailersRecyclerViewAdapter;
     private ReviewsRecyclerViewAdapter reviewsRecyclerViewAdapter;
@@ -102,7 +101,7 @@ public class DetailActivity extends BaseAppCompatActivity {
         if (getIntent().getExtras() != null) {
             Bundle data = getIntent().getExtras();
             movie = (Movie) data.getParcelable(EXTRAS_MOVIE_ID);
-            favouritesMoviesDatebaseHandler = new FavouritesMoviesDatebaseHandler(this);
+            favouritesMoviesDatebaseHandler = new FavouritesMoviesDatebaseHelper(this);
             favouritesMovies = favouritesMoviesDatebaseHandler.getAllMovies();
             loadData(movie);
             setupView();

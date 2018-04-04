@@ -16,6 +16,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.facebook.stetho.Stetho;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +28,7 @@ import mrodkiewicz.pl.popularmovies.PopularMovies;
 import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.MoviesRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
-import mrodkiewicz.pl.popularmovies.db.FavouritesMoviesDatebaseHandler;
+import mrodkiewicz.pl.popularmovies.db.FavouritesMoviesDatebaseHelper;
 import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
@@ -48,13 +50,14 @@ public class MainActivity extends BaseAppCompatActivity {
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
-    private int sorting_state, last_page;
+    //SORTING STATE -> 0 = by popular, 1 = by highest grades, 2 = favoutires
+    private int sorting_state;
     private Integer current_page;
     private CharSequence[] sorting_state_array;
     private SharedPreferences preferences;
     private GridLayoutManager gridLayoutManager;
     private Parcelable state;
-    private FavouritesMoviesDatebaseHandler favouritesMoviesDB;
+    private FavouritesMoviesDatebaseHelper favouritesMoviesDB;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,6 +66,7 @@ public class MainActivity extends BaseAppCompatActivity {
         ButterKnife.bind(this);
 
         if (BuildConfig.DEBUG) {
+            Stetho.initializeWithDefaults(this);
             Timber.plant(new Timber.DebugTree());
         }
         Timber.d("onCreate");
@@ -75,7 +79,7 @@ public class MainActivity extends BaseAppCompatActivity {
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
-        favouritesMoviesDB = new FavouritesMoviesDatebaseHandler(this);
+        favouritesMoviesDB = new FavouritesMoviesDatebaseHelper(this);
 
 
         sorting_state = preferences.getInt(Config.PREFERENCES_SORTING_POSITION, 0);

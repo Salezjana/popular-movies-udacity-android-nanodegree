@@ -1,5 +1,7 @@
 package mrodkiewicz.pl.popularmovies;
 
+import com.facebook.stetho.okhttp3.StethoInterceptor;
+
 import java.util.concurrent.TimeUnit;
 
 import mrodkiewicz.pl.popularmovies.helpers.Config;
@@ -25,6 +27,7 @@ public class PopularMovies {
                 .connectTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .readTimeout(TIMEOUT_SECONDS, TimeUnit.SECONDS)
                 .addInterceptor(interceptor)
+                .addNetworkInterceptor(new StethoInterceptor())
                 .build();
 
         if (BuildConfig.DEBUG) {

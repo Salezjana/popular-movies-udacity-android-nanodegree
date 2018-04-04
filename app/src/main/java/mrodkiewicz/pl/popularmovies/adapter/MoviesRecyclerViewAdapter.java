@@ -44,19 +44,19 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Timber.d("onBindViewHolder");
-        Timber.d("api poster load url: " + Config.API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movieList.get(position).getPosterPath());
+        //Timber.d("onBindViewHolder");
+        //Timber.d("api poster load url: " + Config.API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movieList.get(position).getPosterPath());
 
         if (movieList.get(position).getTitle() == null) {
             if (position == 0) {
-                Timber.d("last element%s", position);
+                //Timber.d("last element%s", position);
                 holder.textView.setText(context.getResources().getString(R.string.previous_page));
                 holder.imageView.setBackgroundColor(Color.BLACK);
                 holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_first_page_24dp));
                 holder.imageView.setPadding(0, 0, 0, 70);
                 holder.imageView.setScaleType(ImageView.ScaleType.FIT_CENTER);
             } else {
-                Timber.d("last element%s", position);
+                //"Timber.d("last element%s", position);
                 holder.textView.setText(context.getResources().getString(R.string.next_page));
                 holder.imageView.setBackgroundColor(Color.BLACK);
                 holder.imageView.setImageDrawable(context.getDrawable(R.drawable.ic_last_page_24dp));
