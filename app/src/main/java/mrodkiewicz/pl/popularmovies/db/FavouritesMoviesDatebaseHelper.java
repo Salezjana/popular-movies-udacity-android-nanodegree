@@ -11,6 +11,13 @@ import java.util.ArrayList;
 import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.model.Movie;
 
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_ID;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_OVERVIEW;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_POSTERPATH;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_RELEASEDATE;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_TITLE;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_VOTEAVERAGE;
+
 /**
  * Created by pc-mikolaj on 24.03.2018.
  */
@@ -37,12 +44,12 @@ public class FavouritesMoviesDatebaseHelper extends SQLiteOpenHelper {
     public void addMovie(Movie movie) {
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
         ContentValues values = new ContentValues();
-        values.put(Config.KEY_MOVIE_ID, movie.getId());
-        values.put(Config.KEY_MOVIE_TITLE, movie.getTitle());
-        values.put(Config.KEY_MOVIE_OVERVIEW, movie.getOverview());
-        values.put(Config.KEY_MOVIE_VOTEAVERAGE, movie.getVoteAverage());
-        values.put(Config.KEY_MOVIE_POSTERPATH, movie.getPosterPath());
-        values.put(Config.KEY_MOVIE_RELEASEDATE, movie.getReleaseDate());
+        values.put(KEY_MOVIE_ID, movie.getId());
+        values.put(KEY_MOVIE_TITLE, movie.getTitle());
+        values.put(KEY_MOVIE_OVERVIEW, movie.getOverview());
+        values.put(KEY_MOVIE_VOTEAVERAGE, movie.getVoteAverage());
+        values.put(KEY_MOVIE_POSTERPATH, movie.getPosterPath());
+        values.put(KEY_MOVIE_RELEASEDATE, movie.getReleaseDate());
         sqLiteDatabase.insertOrThrow(Config.TABLE_MOVIE, null, values);
     }
 
@@ -87,7 +94,7 @@ public class FavouritesMoviesDatebaseHelper extends SQLiteOpenHelper {
 
     public void deleteMovie(Movie movie){
         SQLiteDatabase sqLiteDatabase = getWritableDatabase();
-        sqLiteDatabase.delete(Config.TABLE_MOVIE, Config.KEY_MOVIE_ID + "=" + movie.getId(), null);
+        sqLiteDatabase.delete(Config.TABLE_MOVIE, KEY_MOVIE_ID + "=" + movie.getId(), null);
     }
     public boolean isInDatabase(int id){
         boolean isInDatabase = false;

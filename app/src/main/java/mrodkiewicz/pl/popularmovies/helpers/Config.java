@@ -8,6 +8,16 @@ import android.provider.BaseColumns;
 
 import mrodkiewicz.pl.popularmovies.BuildConfig;
 
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_ID;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_ID;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_OVERVIEW;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_POSTERPATH;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_RELEASEDATE;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_REVIEWS;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_TITLE;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_VIDEOS;
+import static mrodkiewicz.pl.popularmovies.helpers.Config.MovieEntry.KEY_MOVIE_VOTEAVERAGE;
+
 /**
  * Created by Mikolaj Rodkiewicz on 21.02.2018.
  */
@@ -29,65 +39,52 @@ public class Config {
     public static int DATABASE_VERSION = 1;
     public static String DATABASE_NAME = "movies";
     public static String TABLE_MOVIE = "favourites";
-    public static String INTEGER = "INTEGER";
-    public static String TEXT = "TEXT";
-
-    public static String KEY_ID = "_ID";
-    public static String KEY_MOVIE_ID = "MOVIE_ID";
-    public static String KEY_MOVIE_ADULT = "ADULT";
-    public static String KEY_MOVIE_BACKDROPPATH = "BACKDROPPATH";
-    public static String KEY_MOVIE_BUDGET = "BUDGET";
-    public static String KEY_MOVIE_HOMEPAGE = "HOMEPAGE";
-    public static String KEY_MOVIE_IMDBID = "IMDBID";
-    public static String KEY_MOVIE_ORIGINALLANGUAGE = "ORIGINALLANGUAGE";
-    public static String KEY_MOVIE_ORIGINALTITLEEMAIL = "ORIGINALTITLEEMAIL";
-    public static String KEY_MOVIE_OVERVIEW = "OVERVIEW";
-    public static String KEY_MOVIE_POPULARITY = "POPULARITY";
-    public static String KEY_MOVIE_POSTERPATH = "POSTERPATH";
-    public static String KEY_MOVIE_RELEASEDATE = "RELEASEDATE";
-    public static String KEY_MOVIE_REVENUE = "REVENUE";
-    public static String KEY_MOVIE_RUNTIME = "RUNTIME";
-    public static String KEY_MOVIE_STATUS = "STATUS";
-    public static String KEY_MOVIE_TAGLINE = "TAGLINE";
-    public static String KEY_MOVIE_TITLE = "TITLE";
-    public static String KEY_MOVIE_VIDEOS = "VIDEOS";
-    public static String KEY_MOVIE_REVIEWS = "REVIEWS";
-    public static String KEY_MOVIE_VOTEAVERAGE = "VOTEAVERAGE ";
-    public static String KEY_MOVIE_VOTECOUNT = "VOTECOUNT";
-    public static String KEY_MOVIE_FAVOURITE = "VOTECOUNT";
-
-    public static String DATABASE_CREATE = "CREATE TABLE " + Config.TABLE_MOVIE + "("
-            + Config.KEY_ID + " INTEGER NOT NULL PRIMARY KEY,"
-            + Config.KEY_MOVIE_ID + " INTEGER NOT NULL,"
-            + Config.KEY_MOVIE_TITLE + " TEXT NOT NULL,"
-            + Config.KEY_MOVIE_OVERVIEW + " TEXT,"
-            + Config.KEY_MOVIE_VOTEAVERAGE + " REAL,"
-            + Config.KEY_MOVIE_POSTERPATH + " TEXT,"
-            + Config.KEY_MOVIE_RELEASEDATE + " TEXT,"
-            + Config.KEY_MOVIE_VIDEOS + " TEXT,"
-            + Config.KEY_MOVIE_REVIEWS + " TEXT,"
-            + Config.KEY_MOVIE_FAVOURITE + " INTEGER NOT NULL DEFAULT 0,"
-            + "UNIQUE (" + Config.KEY_MOVIE_ID + ") ON CONFLICT REPLACE)";
 
     public static String DATABASE_DROP = "DROP TABLE IF EXISTS " + TABLE_MOVIE;
 
-    public static final String CONTENT_AUTHORITY = "pl.mrodkiewicz";
+    public static final String CONTENT_AUTHORITY = "pl.mrodkiewicz.popularmovies";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
 
-    public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
-                .appendPath(TABLE_MOVIE).build();
+    public static final class MovieEntry implements BaseColumns {
+        public static String DATABASE_NAME = "movies";
 
-    public static final String CONTENT_DIR_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + TABLE_MOVIE;
+        public static String KEY_ID = "_ID";
+        public static String KEY_MOVIE_ID = "MOVIE_ID";
+        public static String KEY_MOVIE_TITLE = "TITLE";
+        public static String KEY_MOVIE_OVERVIEW = "OVERVIEW";
+        public static String KEY_MOVIE_VOTEAVERAGE = "VOTEAVERAGE ";
+        public static String KEY_MOVIE_POSTERPATH = "POSTERPATH";
+        public static String KEY_MOVIE_RELEASEDATE = "RELEASEDATE";
+        public static String KEY_MOVIE_VIDEOS = "VIDEOS";
+        public static String KEY_MOVIE_REVIEWS = "REVIEWS";
 
-    public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE +"/" + CONTENT_AUTHORITY + "/" + TABLE_MOVIE;
+        public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon()
+                .appendPath(DATABASE_NAME).build();
 
-    public static Uri buildFlavorsUri(long id){
+        public static final String CONTENT_DIR_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + DATABASE_NAME;
+
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE +"/" + CONTENT_AUTHORITY + "/" + DATABASE_NAME;
+
+        public static Uri buildFlavorsUri(long id){
             return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
     }
+
+    public static String DATABASE_CREATE = "CREATE TABLE " + Config.TABLE_MOVIE + "("
+            + KEY_ID + " INTEGER NOT NULL PRIMARY KEY,"
+            + KEY_MOVIE_ID + " INTEGER NOT NULL,"
+            + KEY_MOVIE_TITLE + " TEXT NOT NULL,"
+            + KEY_MOVIE_OVERVIEW + " TEXT,"
+            + KEY_MOVIE_VOTEAVERAGE + " REAL,"
+            + KEY_MOVIE_POSTERPATH + " TEXT,"
+            + KEY_MOVIE_RELEASEDATE + " TEXT,"
+            + KEY_MOVIE_VIDEOS + " TEXT,"
+            + KEY_MOVIE_REVIEWS + " TEXT,"
+            + "UNIQUE (" + KEY_MOVIE_ID + ") ON CONFLICT REPLACE)";
 
 
 }
