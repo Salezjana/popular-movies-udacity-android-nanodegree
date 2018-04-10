@@ -1,10 +1,13 @@
 package mrodkiewicz.pl.popularmovies.view;
 
 import android.annotation.SuppressLint;
+import android.app.LoaderManager;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
@@ -12,6 +15,8 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,9 +48,12 @@ import timber.log.Timber;
  * Created by Mikolaj Rodkiewicz on 19.02.2018.
  */
 
-public class MainActivity extends BaseAppCompatActivity {
+public class MainActivity extends BaseAppCompatActivity  implements
+        android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor> {
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
+    private static final int TASK_LOADER_ID = 0;
+
 
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
@@ -57,6 +65,7 @@ public class MainActivity extends BaseAppCompatActivity {
     private SharedPreferences preferences;
     private GridLayoutManager gridLayoutManager;
     private Parcelable state;
+    private ContentResolver contentResolver;
     private FavouritesMoviesDatebaseHelper favouritesMoviesDB;
 
     @Override
@@ -66,10 +75,18 @@ public class MainActivity extends BaseAppCompatActivity {
         ButterKnife.bind(this);
 
         if (BuildConfig.DEBUG) {
-            Stetho.initializeWithDefaults(this);
+            Stetho.initialize(
+                    Stetho.newInitializerBuilder(this)
+                            .enableDumpapp(
+                                    Stetho.defaultDumperPluginsProvider(this))
+                            .enableWebKitInspector(
+                                    Stetho.defaultInspectorModulesProvider(this))
+                            .build());
             Timber.plant(new Timber.DebugTree());
         }
         Timber.d("onCreate");
+
+        contentResolver = getContentResolver();
 
         preferences = this.getSharedPreferences(
                 Config.PREFERENCES_KEY, Context.MODE_PRIVATE);
@@ -91,11 +108,11 @@ public class MainActivity extends BaseAppCompatActivity {
         if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             if (sorting_state != 2) {
                 movies.clear();
-                updateMoviesList(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
+//                updateMoviesList(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
                 moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.RECYCLEVIEW_POSITION_KEY));
                 current_page = savedInstanceState.getInt(Config.RECYCLEVIEW_PAGE_KEY);
                 hideProgressDialog();
-            }else {
+            } else {
                 current_page = 1;
                 loadMovies(current_page, sorting_state);
             }
@@ -104,7 +121,7 @@ public class MainActivity extends BaseAppCompatActivity {
             loadMovies(current_page, sorting_state);
 
         }
-
+        getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
     }
 
     private void setupView() {
@@ -156,7 +173,20 @@ public class MainActivity extends BaseAppCompatActivity {
         Timber.d("loadMovies isOnline " + isInternetEnable());
         if (sorting_state == 2) {
             movies.clear();
-            updateMoviesList(favouritesMoviesDB.getAllMovies());
+            //updateMoviesList(favouritesMoviesDB.getAllMovies());
+            Cursor cursor = getContentResolver().query(
+                    Config.MovieEntry.CONTENT_URI,
+                    null,
+                    null,
+                    null,
+                    null);
+            if (cursor != null) {
+                while (cursor.moveToNext()) {
+                    Timber.d("cursor" + cursor.getColumnIndex(Config.MovieEntry.KEY_MOVIE_ID));
+                }
+            } else {
+                Timber.d("curosr = null");
+            }
             moviesRecyclerView.scrollToPosition(0);
             hideProgressDialog();
         } else {
@@ -211,6 +241,7 @@ public class MainActivity extends BaseAppCompatActivity {
         }
 
     }
+
 
     @Override
     public void onPause() {
@@ -290,10 +321,78 @@ public class MainActivity extends BaseAppCompatActivity {
         }
     }
 
-    private void updateMoviesList(List<Movie> newMovies){
+    private void updateMoviesList(List<Movie> newMovies) {
         movies.addAll(newMovies);
         moviesRecyclerViewAdapter.notifyDataSetChanged();
     }
+
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, final Bundle loaderArgs) {
+
+        return new AsyncTaskLoader<Cursor>(this) {
+
+            // Initialize a Cursor, this will hold all the task data
+            Cursor mTaskData = null;
+
+            // onStartLoading() is called when a loader first starts loading data
+            @Override
+            protected void onStartLoading() {
+                if (mTaskData != null) {
+                    // Delivers any previously loaded data immediately
+                    deliverResult(mTaskData);
+                } else {
+                    // Force a new load
+                    forceLoad();
+                }
+            }
+
+            // loadInBackground() performs asynchronous loading of data
+            @Override
+            public Cursor loadInBackground() {
+                // Will implement to load data
+
+                // TODO (5) Query and load all task data in the background; sort by priority
+                // [Hint] use a try/catch block to catch any errors in loading data
+
+                return null;
+            }
+
+            // deliverResult sends the result of the load, a Cursor, to the registered listener
+            public void deliverResult(Cursor data) {
+                mTaskData = data;
+                super.deliverResult(data);
+            }
+        };
+
+    }
+
+
+    /**
+     * Called when a previously created loader has finished its load.
+     *
+     * @param loader The Loader that has finished.
+     * @param data The data generated by the Loader.
+     */
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        Timber.d("onLoadFinished");
+    }
+
+
+    /**
+     * Called when a previously created loader is being reset, and thus
+     * making its data unavailable.
+     * onLoaderReset removes any references this activity had to the loader's data.
+     *
+     * @param loader The Loader that is being reset.
+     */
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        Timber.d("onLoaderReset");
+    }
+
+
 
 
 }

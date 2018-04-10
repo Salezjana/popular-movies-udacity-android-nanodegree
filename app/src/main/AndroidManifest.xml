@@ -26,6 +26,11 @@
             android:label="@string/title_activity_detail"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:parentActivityName=".view.MainActivity" />
+
+            <provider
+                android:authorities="mrodkiewicz.pl.popularmovies"
+                android:name="mrodkiewicz.pl.popularmovies.provider.MoviesProvider"
+                android:exported="false"/>
     </application>
 
 </manifest>

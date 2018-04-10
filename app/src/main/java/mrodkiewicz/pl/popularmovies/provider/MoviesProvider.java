@@ -20,7 +20,7 @@ public class MoviesProvider extends ContentProvider {
     private FavouritesMoviesDatebaseHelper favouritesMoviesDatebaseHelper;
 
     private static final int MOVIE = 100;
-    private static final int MOVIE_BY_ID = 200;
+    private static final int MOVIE_BY_ID = 101;
 
     private static UriMatcher buildUriMatcher() {
         final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
