@@ -121,7 +121,7 @@ public class MainActivity extends BaseAppCompatActivity  implements
             loadMovies(current_page, sorting_state);
 
         }
-        getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
+
     }
 
     private void setupView() {
@@ -174,21 +174,9 @@ public class MainActivity extends BaseAppCompatActivity  implements
         if (sorting_state == 2) {
             movies.clear();
             //updateMoviesList(favouritesMoviesDB.getAllMovies());
-            Cursor cursor = getContentResolver().query(
-                    Config.MovieEntry.CONTENT_URI,
-                    null,
-                    null,
-                    null,
-                    null);
-            if (cursor != null) {
-                while (cursor.moveToNext()) {
-                    Timber.d("cursor" + cursor.getColumnIndex(Config.MovieEntry.KEY_MOVIE_ID));
-                }
-            } else {
-                Timber.d("curosr = null");
-            }
+            Loader loader = getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
+
             moviesRecyclerView.scrollToPosition(0);
-            hideProgressDialog();
         } else {
             if (isInternetEnable()) {
                 APIService apiService =
@@ -350,12 +338,18 @@ public class MainActivity extends BaseAppCompatActivity  implements
             // loadInBackground() performs asynchronous loading of data
             @Override
             public Cursor loadInBackground() {
-                // Will implement to load data
+                try {
+                    return getContentResolver().query(Config.MovieEntry.CONTENT_URI,
+                            null,
+                            null,
+                            null,
+                            Config.MovieEntry.KEY_MOVIE_ID);
 
-                // TODO (5) Query and load all task data in the background; sort by priority
-                // [Hint] use a try/catch block to catch any errors in loading data
-
-                return null;
+                } catch (Exception e) {
+                    Timber.d("no sie popsulo");
+                    e.printStackTrace();
+                    return null;
+                }
             }
 
             // deliverResult sends the result of the load, a Cursor, to the registered listener
@@ -376,7 +370,13 @@ public class MainActivity extends BaseAppCompatActivity  implements
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data == null){
+            Timber.d(" Cursor data = null");
+        }
+        Timber.d("con" + Config.MovieEntry.CONTENT_URI);
         Timber.d("onLoadFinished");
+        cursorToList(data);
+        hideProgressDialog();
     }
 
 
@@ -390,6 +390,16 @@ public class MainActivity extends BaseAppCompatActivity  implements
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
         Timber.d("onLoaderReset");
+        hideProgressDialog();
+    }
+
+    public void cursorToList(Cursor cursor){
+        ArrayList<Movie> tmpMoves = new ArrayList<Movie>();
+        cursor.moveToFirst();
+        Timber.d(String.valueOf(cursor.getInt(0)));
+        Timber.d(cursor.getString(1));
+        Timber.d(cursor.getString(2));
+        updateMoviesList(tmpMoves);
     }
 
 
