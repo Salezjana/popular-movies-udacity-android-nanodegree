@@ -29,8 +29,8 @@
 
             <provider
                 android:authorities="mrodkiewicz.pl.popularmovies"
-                android:name="mrodkiewicz.pl.popularmovies.provider.MoviesProvider"
-                android:exported="false"/>
+                android:name=".provider.MoviesProvider"
+                android:exported="true"/>
     </application>
 
 </manifest>

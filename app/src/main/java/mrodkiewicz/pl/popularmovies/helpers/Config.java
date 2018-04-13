@@ -42,7 +42,7 @@ public class Config {
 
     public static String DATABASE_DROP = "DROP TABLE IF EXISTS " + TABLE_MOVIE;
 
-    public static final String CONTENT_AUTHORITY = "pl.mrodkiewicz.popularmovies";
+    public static final String CONTENT_AUTHORITY = "mrodkiewicz.pl.popularmovies";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
