@@ -48,7 +48,7 @@ public class Config {
 
 
     public static final class MovieEntry implements BaseColumns {
-        public static String DATABASE_NAME = "movies";
+        public static String DATABASE_NAME = "favourites";
 
         public static String KEY_ID = "_ID";
         public static String KEY_MOVIE_ID = "MOVIE_ID";
