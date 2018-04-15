@@ -85,7 +85,7 @@ public class MainActivity extends BaseAppCompatActivity  implements
             Timber.plant(new Timber.DebugTree());
         }
         Timber.d("onCreate");
-
+        Timber.d("UGA BUGA " + Config.CONTENT_AUTHORITY+ "/"+ Config.TABLE_MOVIE);
         contentResolver = getContentResolver();
 
         preferences = this.getSharedPreferences(
@@ -173,7 +173,7 @@ public class MainActivity extends BaseAppCompatActivity  implements
         Timber.d("loadMovies isOnline " + isInternetEnable());
         if (sorting_state == 2) {
             movies.clear();
-            //updateMoviesList(favouritesMoviesDB.getAllMovies());
+
             Loader loader = getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
 
             moviesRecyclerView.scrollToPosition(0);
@@ -373,7 +373,7 @@ public class MainActivity extends BaseAppCompatActivity  implements
         if (data == null){
             Timber.d(" Cursor data = null");
         }
-        Timber.d("con" + Config.MovieEntry.CONTENT_URI);
+        Timber.d("CONTENT_URI " + Config.MovieEntry.CONTENT_URI);
         Timber.d("onLoadFinished");
         cursorToList(data);
         hideProgressDialog();
@@ -394,12 +394,16 @@ public class MainActivity extends BaseAppCompatActivity  implements
     }
 
     public void cursorToList(Cursor cursor){
-        ArrayList<Movie> tmpMoves = new ArrayList<Movie>();
-        cursor.moveToFirst();
-        Timber.d(String.valueOf(cursor.getInt(0)));
-        Timber.d(cursor.getString(1));
-        Timber.d(cursor.getString(2));
-        updateMoviesList(tmpMoves);
+        if (cursor != null) {
+            ArrayList<Movie> tmpMoves = new ArrayList<Movie>();
+            cursor.moveToFirst();
+            while (!cursor.isAfterLast()) {
+                Timber.d(cursor.getInt(1) + cursor.getString(3) + cursor.getString(5) + cursor.getString(4) + cursor.getString(2)+ cursor.getDouble(6));
+                tmpMoves.add(new Movie(cursor.getInt(1),cursor.getString(3),cursor.getString(5),cursor.getString(4),cursor.getString(2),cursor.getDouble(6)));
+                cursor.moveToNext();
+            }
+            updateMoviesList(tmpMoves);
+        }
     }
 
 

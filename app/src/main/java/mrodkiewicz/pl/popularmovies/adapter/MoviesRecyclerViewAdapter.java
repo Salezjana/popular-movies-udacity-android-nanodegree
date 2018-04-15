@@ -91,4 +91,5 @@ public class MoviesRecyclerViewAdapter extends RecyclerView.Adapter<MoviesRecycl
 
         }
     }
+
 }

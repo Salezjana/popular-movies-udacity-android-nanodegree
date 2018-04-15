@@ -29,12 +29,14 @@ public class MoviesProvider extends ContentProvider {
         matcher.addURI(authority, Config.TABLE_MOVIE, MOVIE);
         matcher.addURI(authority, Config.TABLE_MOVIE + "/#", MOVIE_BY_ID);
 
+
         return matcher;
     }
 
     @Override
     public boolean onCreate() {
         favouritesMoviesDatebaseHelper = new FavouritesMoviesDatebaseHelper(getContext());
+
         return true;
     }
 
