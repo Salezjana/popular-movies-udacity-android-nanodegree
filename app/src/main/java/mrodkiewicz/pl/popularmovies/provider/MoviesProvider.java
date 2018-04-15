@@ -43,6 +43,7 @@ public class MoviesProvider extends ContentProvider {
     @Nullable
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        final SQLiteDatabase db = favouritesMoviesDatebaseHelper.getWritableDatabase();
         Cursor retCursor;
         switch (sUriMatcher.match(uri)) {
             case MOVIE: {
@@ -60,7 +61,7 @@ public class MoviesProvider extends ContentProvider {
                 retCursor = favouritesMoviesDatebaseHelper.getReadableDatabase().query(
                         Config.TABLE_MOVIE,
                         projection,
-                        Config.MovieEntry._ID + " = ?",
+                        Config.MovieEntry.KEY_MOVIE_ID + " = ?",
                         new String[]{String.valueOf(ContentUris.parseId(uri))},
                         null,
                         null,
@@ -122,12 +123,6 @@ public class MoviesProvider extends ContentProvider {
         final int match = sUriMatcher.match(uri);
         int numDeleted;
         switch (match) {
-            case MOVIE:
-                numDeleted = db.delete(
-                        Config.TABLE_MOVIE, selection, selectionArgs);
-                db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
-                        Config.TABLE_MOVIE + "'");
-                break;
             case MOVIE_BY_ID:
                 numDeleted = db.delete(Config.TABLE_MOVIE,
                         Config.MovieEntry._ID + " = ?",
@@ -217,5 +212,6 @@ public class MoviesProvider extends ContentProvider {
 
         return numUpdated;
     }
+
 }
 

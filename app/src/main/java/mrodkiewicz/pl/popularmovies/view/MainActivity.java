@@ -1,7 +1,6 @@
 package mrodkiewicz.pl.popularmovies.view;
 
 import android.annotation.SuppressLint;
-import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -11,12 +10,12 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v4.content.AsyncTaskLoader;
-import android.support.v4.content.Loader;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -48,13 +47,11 @@ import timber.log.Timber;
  * Created by Mikolaj Rodkiewicz on 19.02.2018.
  */
 
-public class MainActivity extends BaseAppCompatActivity  implements
+public class MainActivity extends BaseAppCompatActivity implements
         android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor> {
     @BindView(R.id.movies_recycler_view)
     RecyclerView moviesRecyclerView;
     private static final int TASK_LOADER_ID = 0;
-
-
     private ArrayList<Movie> movies;
     private PopularMovies popularMovies;
     private MoviesRecyclerViewAdapter moviesRecyclerViewAdapter;
@@ -65,6 +62,7 @@ public class MainActivity extends BaseAppCompatActivity  implements
     private SharedPreferences preferences;
     private GridLayoutManager gridLayoutManager;
     private Parcelable state;
+    private boolean haveFavouriteSaved;
     private ContentResolver contentResolver;
     private FavouritesMoviesDatebaseHelper favouritesMoviesDB;
 
@@ -85,7 +83,6 @@ public class MainActivity extends BaseAppCompatActivity  implements
             Timber.plant(new Timber.DebugTree());
         }
         Timber.d("onCreate");
-        Timber.d("UGA BUGA " + Config.CONTENT_AUTHORITY+ "/"+ Config.TABLE_MOVIE);
         contentResolver = getContentResolver();
 
         preferences = this.getSharedPreferences(
@@ -96,9 +93,6 @@ public class MainActivity extends BaseAppCompatActivity  implements
         movies = new ArrayList<Movie>();
         popularMovies = new PopularMovies();
 
-        favouritesMoviesDB = new FavouritesMoviesDatebaseHelper(this);
-
-
         sorting_state = preferences.getInt(Config.PREFERENCES_SORTING_POSITION, 0);
         sorting_state_array = new CharSequence[]{"by popular", "by highest grades", "favourites"};
 
@@ -108,13 +102,13 @@ public class MainActivity extends BaseAppCompatActivity  implements
         if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             if (sorting_state != 2) {
                 movies.clear();
-//                updateMoviesList(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
+                updateMoviesList(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
                 moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.RECYCLEVIEW_POSITION_KEY));
                 current_page = savedInstanceState.getInt(Config.RECYCLEVIEW_PAGE_KEY);
                 hideProgressDialog();
             } else {
-                current_page = 1;
-                loadMovies(current_page, sorting_state);
+                movies.clear();
+                moviesRecyclerView.scrollToPosition(0);
             }
         } else {
             current_page = 1;
@@ -159,6 +153,7 @@ public class MainActivity extends BaseAppCompatActivity  implements
                     }
                 } else {
                     startActivity(DetailActivity.getConfigureIntent(getApplicationContext(), movies.get(position)));
+
                 }
             }
 
@@ -173,9 +168,7 @@ public class MainActivity extends BaseAppCompatActivity  implements
         Timber.d("loadMovies isOnline " + isInternetEnable());
         if (sorting_state == 2) {
             movies.clear();
-
             Loader loader = getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
-
             moviesRecyclerView.scrollToPosition(0);
         } else {
             if (isInternetEnable()) {
@@ -251,8 +244,14 @@ public class MainActivity extends BaseAppCompatActivity  implements
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         current_page = savedInstanceState.getInt(Config.RECYCLEVIEW_PAGE_KEY);
-        movies.clear();
-        updateMoviesList(savedInstanceState.<Movie>getParcelableArrayList(Config.RECYCLEVIEW_LIST_KEY));
+        sorting_state = preferences.getInt(Config.PREFERENCES_SORTING_POSITION, 0);
+        if(sorting_state != 2){
+            movies.clear();
+        }else {
+            movies.clear();
+            Loader loader = getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
+            moviesRecyclerView.scrollToPosition(0);
+        }
         moviesRecyclerView.scrollToPosition(savedInstanceState.getInt(Config.RECYCLEVIEW_POSITION_KEY));
         Timber.d("onRestoreInstanceState");
     }
@@ -283,6 +282,7 @@ public class MainActivity extends BaseAppCompatActivity  implements
                                     }
                                     sorting_state = selectedPosition;
                                     preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
+                                    Timber.d("preferences int " + sorting_state);
                                     showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 } else if (selectedPosition == 1) {
@@ -291,11 +291,13 @@ public class MainActivity extends BaseAppCompatActivity  implements
                                     }
                                     sorting_state = selectedPosition;
                                     preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
+                                    Timber.d("preferences int " + sorting_state);
                                     showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 } else {
                                     sorting_state = selectedPosition;
                                     preferences.edit().putInt(Config.PREFERENCES_SORTING_POSITION, sorting_state).apply();
+                                    Timber.d("preferences int " + sorting_state);
                                     showProgressDialog(null, getString(R.string.download_movies));
                                     loadMovies(current_page, sorting_state);
                                 }
@@ -366,11 +368,11 @@ public class MainActivity extends BaseAppCompatActivity  implements
      * Called when a previously created loader has finished its load.
      *
      * @param loader The Loader that has finished.
-     * @param data The data generated by the Loader.
+     * @param data   The data generated by the Loader.
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        if (data == null){
+        if (data == null) {
             Timber.d(" Cursor data = null");
         }
         Timber.d("CONTENT_URI " + Config.MovieEntry.CONTENT_URI);
@@ -393,20 +395,20 @@ public class MainActivity extends BaseAppCompatActivity  implements
         hideProgressDialog();
     }
 
-    public void cursorToList(Cursor cursor){
+    public void cursorToList(Cursor cursor) {
         if (cursor != null) {
             ArrayList<Movie> tmpMoves = new ArrayList<Movie>();
+            tmpMoves.clear();
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                Timber.d(cursor.getInt(1) + cursor.getString(3) + cursor.getString(5) + cursor.getString(4) + cursor.getString(2)+ cursor.getDouble(6));
-                tmpMoves.add(new Movie(cursor.getInt(1),cursor.getString(3),cursor.getString(5),cursor.getString(4),cursor.getString(2),cursor.getDouble(6)));
+                Timber.d(cursor.getInt(1) + cursor.getString(3) + cursor.getString(5) + cursor.getString(4) + cursor.getString(2) + cursor.getDouble(6));
+                tmpMoves.add(new Movie(cursor.getInt(1), cursor.getString(3), cursor.getString(5), cursor.getString(4), cursor.getString(2), cursor.getDouble(6)));
                 cursor.moveToNext();
             }
+            movies.clear();
             updateMoviesList(tmpMoves);
         }
     }
-
-
 
 
 }

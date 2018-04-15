@@ -1,10 +1,16 @@
 package mrodkiewicz.pl.popularmovies.view;
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -27,7 +33,6 @@ import mrodkiewicz.pl.popularmovies.R;
 import mrodkiewicz.pl.popularmovies.adapter.ReviewsRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.adapter.TrailersRecyclerViewAdapter;
 import mrodkiewicz.pl.popularmovies.api.APIService;
-import mrodkiewicz.pl.popularmovies.db.FavouritesMoviesDatebaseHelper;
 import mrodkiewicz.pl.popularmovies.helpers.Config;
 import mrodkiewicz.pl.popularmovies.listeners.RecyclerViewItemClickListener;
 import mrodkiewicz.pl.popularmovies.model.Movie;
@@ -49,7 +54,7 @@ import static mrodkiewicz.pl.popularmovies.helpers.Config.API_IMAGE_URL;
  */
 
 
-public class DetailActivity extends BaseAppCompatActivity {
+public class DetailActivity extends BaseAppCompatActivity implements android.support.v4.app.LoaderManager.LoaderCallbacks<Cursor> {
     public static final String EXTRAS_MOVIE_ID = "EXTRAS_MOVIE_ID";
     @BindView(R.id.activity_detail_title_textview)
     TextView activityDetailTitleTextview;
@@ -73,15 +78,13 @@ public class DetailActivity extends BaseAppCompatActivity {
     TextView activityDetailTrailersTextView;
     @BindView(R.id.activity_detail_reviews_textView)
     TextView activityDetailReviewsTextView;
-
+    private static final int TASK_LOADER_ID = 1;
     private ArrayList<Trailer> trailers = new ArrayList<Trailer>();
     private ArrayList<Reviews> reviews = new ArrayList<Reviews>();
     private PopularMovies popularMovies;
     private Movie movie;
     private boolean isFavoutire;
     private MenuItem menuItem;
-    private FavouritesMoviesDatebaseHelper favouritesMoviesDatebaseHandler;
-    private ArrayList<Movie> favouritesMovies;
     private TrailersRecyclerViewAdapter trailersRecyclerViewAdapter;
     private ReviewsRecyclerViewAdapter reviewsRecyclerViewAdapter;
 
@@ -101,8 +104,7 @@ public class DetailActivity extends BaseAppCompatActivity {
         if (getIntent().getExtras() != null) {
             Bundle data = getIntent().getExtras();
             movie = (Movie) data.getParcelable(EXTRAS_MOVIE_ID);
-            favouritesMoviesDatebaseHandler = new FavouritesMoviesDatebaseHelper(this);
-            favouritesMovies = favouritesMoviesDatebaseHandler.getAllMovies();
+            Loader loader = getSupportLoaderManager().initLoader(TASK_LOADER_ID, null, this);
             loadData(movie);
             setupView();
             initListener();
@@ -143,8 +145,7 @@ public class DetailActivity extends BaseAppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_activity_detail, menu);
         menuItem = menu.getItem(0);
-        if (favouritesMoviesDatebaseHandler.isInDatabase(movie.getId())) {
-            isFavoutire = true;
+        if (isFavoutire) {
             menuItem.setIcon(R.drawable.ic_favorite_24dp);
             menuItem.setTitle(getString(R.string.action_favourite_true));
         } else {
@@ -164,7 +165,15 @@ public class DetailActivity extends BaseAppCompatActivity {
                     isFavoutire = false;
                     item.setIcon(R.drawable.ic_favorite_border_24dp);
                     item.setTitle(getString(R.string.action_favourite_false));
-                    favouritesMoviesDatebaseHandler.deleteMovie(movie);
+//                    favouritesMoviesDatebaseHandler.deleteMovie(movie);
+                    ContentValues values = new ContentValues();
+                    values.put(Config.MovieEntry.KEY_MOVIE_ID,movie.getId());
+                    values.put(Config.MovieEntry.KEY_MOVIE_OVERVIEW,movie.getOverview());
+                    values.put(Config.MovieEntry.KEY_MOVIE_POSTERPATH,movie.getPosterPath());
+                    values.put(Config.MovieEntry.KEY_MOVIE_RELEASEDATE,movie.getReleaseDate());
+                    values.put(Config.MovieEntry.KEY_MOVIE_TITLE,movie.getTitle());
+                    values.put(Config.MovieEntry.KEY_MOVIE_VOTEAVERAGE,movie.getVoteAverage());
+                    getContentResolver().insert(Config.MovieEntry.CONTENT_URI,values);
                     Timber.d("isFavoutire = false");
 
                 } else {
@@ -172,7 +181,7 @@ public class DetailActivity extends BaseAppCompatActivity {
                     isFavoutire = true;
                     item.setIcon(R.drawable.ic_favorite_24dp);
                     item.setTitle(getString(R.string.action_favourite_true));
-                    favouritesMoviesDatebaseHandler.addMovie(movie);
+//                    favouritesMoviesDatebaseHandler.addMovie(movie);
                     Timber.d("isFavoutire = true");
                 }
                 return true;
@@ -182,18 +191,18 @@ public class DetailActivity extends BaseAppCompatActivity {
     }
 
     private void loadData(final Movie movie) {
-        if (movie.getTitle() != null){
+        if (movie.getTitle() != null) {
             setTitle(movie.getTitle());
             activityDetailTitleTextview.setText(movie.getTitle());
         }
         Picasso.with(getApplicationContext()).load(API_IMAGE_URL + Config.API_IMAGE_SIZE_W185 + movie.getPosterPath()).into(activityDetailImageView);
-        if (movie.getOverview() != null){
+        if (movie.getOverview() != null) {
             activityDetailDescriptionTextView.setText(movie.getOverview());
         }
-        if (movie.getReleaseDate() != null){
+        if (movie.getReleaseDate() != null) {
             activityDetailYearTextView.setText(movie.getReleaseDate());
         }
-        if (movie.getVoteAverage() != null){
+        if (movie.getVoteAverage() != null) {
             activityDetailMarkTextView.setText(movie.getVoteAverage().toString() + getString(R.string.rating_activity_detail));
         }
         if (isInternetEnable()) {
@@ -261,14 +270,95 @@ public class DetailActivity extends BaseAppCompatActivity {
     }
 
 
-    private void setAsFavoutire() {
-        menuItem.setIcon(R.drawable.ic_favorite_border_24dp);
-        menuItem.setTitle(getString(R.string.action_favourite_false));
+    @NonNull
+    @Override
+    public Loader<Cursor> onCreateLoader(final int id, @Nullable Bundle args) {
+        return new AsyncTaskLoader<Cursor>(this) {
+
+            // Initialize a Cursor, this will hold all the task data
+            Cursor mTaskData = null;
+
+            // onStartLoading() is called when a loader first starts loading data
+            @Override
+            protected void onStartLoading() {
+                if (mTaskData != null) {
+                    // Delivers any previously loaded data immediately
+                    deliverResult(mTaskData);
+                } else {
+                    // Force a new load
+                    forceLoad();
+                }
+            }
+
+            // loadInBackground() performs asynchronous loading of data
+            @Override
+            public Cursor loadInBackground() {
+                try {
+                    return getContentResolver().query(Config.MovieEntry.buildFlavorsUri(movie.getId()),
+                            null,
+                            null,
+                            null,
+                            Config.MovieEntry.KEY_MOVIE_ID);
+
+                } catch (Exception e) {
+                    Timber.d("no sie popsulo");
+                    e.printStackTrace();
+                    return null;
+                }
+            }
+
+            // deliverResult sends the result of the load, a Cursor, to the registered listener
+            public void deliverResult(Cursor data) {
+                mTaskData = data;
+                super.deliverResult(data);
+            }
+        };
+
     }
 
-    private void setAsNotFavourite() {
-        menuItem.setIcon(R.drawable.ic_favorite_24dp);
-        menuItem.setTitle(getString(R.string.action_favourite_true));
+
+    /**
+     * Called when a previously created loader has finished its load.
+     *
+     * @param loader The Loader that has finished.
+     * @param data The data generated by the Loader.
+     */
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        if (data == null){
+            Timber.d(" Cursor data = null");
+        }
+        Timber.d("CONTENT_URI " + Config.MovieEntry.buildFlavorsUri(movie.getId()));
+        Timber.d("onLoadFinished");
+        if (data == null){
+            Timber.d("data == null");
+        }
+        if (data.moveToFirst()){
+            isFavoutire = true;
+            Timber.d(String.valueOf(data.getInt(0)));
+            Timber.d(String.valueOf(data.getInt(1)));
+            Timber.d(data.getString(2));
+        }else {
+            isFavoutire = false;
+        }
+
+
+
+
+        hideProgressDialog();
     }
 
+
+    /**
+     * Called when a previously created loader is being reset, and thus
+     * making its data unavailable.
+     * onLoaderReset removes any references this activity had to the loader's data.
+     *
+     * @param loader The Loader that is being reset.
+     */
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        Timber.d("onLoaderReset");
+        hideProgressDialog();
+    }
 }
