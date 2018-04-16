@@ -165,7 +165,14 @@ public class DetailActivity extends BaseAppCompatActivity implements android.sup
                     isFavoutire = false;
                     item.setIcon(R.drawable.ic_favorite_border_24dp);
                     item.setTitle(getString(R.string.action_favourite_false));
-//                    favouritesMoviesDatebaseHandler.deleteMovie(movie);
+                    getContentResolver().delete(Config.MovieEntry.buildFlavorsUri(movie.getId()),null,null);
+                    Timber.d("isFavoutire = false");
+
+                } else {
+                    Timber.d("isFavoutire was = false");
+                    isFavoutire = true;
+                    item.setIcon(R.drawable.ic_favorite_24dp);
+                    item.setTitle(getString(R.string.action_favourite_true));
                     ContentValues values = new ContentValues();
                     values.put(Config.MovieEntry.KEY_MOVIE_ID,movie.getId());
                     values.put(Config.MovieEntry.KEY_MOVIE_OVERVIEW,movie.getOverview());
@@ -174,14 +181,6 @@ public class DetailActivity extends BaseAppCompatActivity implements android.sup
                     values.put(Config.MovieEntry.KEY_MOVIE_TITLE,movie.getTitle());
                     values.put(Config.MovieEntry.KEY_MOVIE_VOTEAVERAGE,movie.getVoteAverage());
                     getContentResolver().insert(Config.MovieEntry.CONTENT_URI,values);
-                    Timber.d("isFavoutire = false");
-
-                } else {
-                    Timber.d("isFavoutire was = false");
-                    isFavoutire = true;
-                    item.setIcon(R.drawable.ic_favorite_24dp);
-                    item.setTitle(getString(R.string.action_favourite_true));
-//                    favouritesMoviesDatebaseHandler.addMovie(movie);
                     Timber.d("isFavoutire = true");
                 }
                 return true;

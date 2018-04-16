@@ -125,9 +125,9 @@ public class MoviesProvider extends ContentProvider {
         switch (match) {
             case MOVIE_BY_ID:
                 numDeleted = db.delete(Config.TABLE_MOVIE,
-                        Config.MovieEntry._ID + " = ?",
+                        Config.MovieEntry.KEY_MOVIE_ID + " = ?",
                         new String[]{String.valueOf(ContentUris.parseId(uri))});
-                db.execSQL("DELETE FROM SQLITE_SEQUENCE WHERE NAME = '" +
+                db.execSQL("DELETE FROM "+Config.TABLE_MOVIE+" WHERE "+Config.MovieEntry.KEY_MOVIE_ID+" = '" +
                         Config.TABLE_MOVIE + "'");
 
                 break;
