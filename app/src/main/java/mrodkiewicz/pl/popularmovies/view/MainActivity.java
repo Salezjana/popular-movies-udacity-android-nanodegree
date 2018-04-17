@@ -252,7 +252,7 @@ public class MainActivity extends BaseAppCompatActivity implements
             loadMovies(current_page,sorting_state);
             moviesRecyclerView.scrollToPosition(0);
         }
-        Timber.d("onRestoreInstanceState");
+        Timber.d("onRestoreInstanceState " + sorting_state);
     }
 
 
@@ -396,17 +396,19 @@ public class MainActivity extends BaseAppCompatActivity implements
 
     public void cursorToList(Cursor cursor) {
         Timber.d("cursorToList");
-        if (cursor != null) {
-            ArrayList<Movie> tmpMoves = new ArrayList<Movie>();
-            tmpMoves.clear();
-            cursor.moveToFirst();
-            while (!cursor.isAfterLast()) {
-                Timber.d(cursor.getInt(1) + cursor.getString(3) + cursor.getString(5) + cursor.getString(4) + cursor.getString(2) + cursor.getDouble(6));
-                tmpMoves.add(new Movie(cursor.getInt(1), cursor.getString(3), cursor.getString(5), cursor.getString(4), cursor.getString(2), cursor.getDouble(6)));
-                cursor.moveToNext();
+        if (sorting_state == 2){
+            if (cursor != null) {
+                ArrayList<Movie> tmpMoves = new ArrayList<Movie>();
+                tmpMoves.clear();
+                cursor.moveToFirst();
+                while (!cursor.isAfterLast()) {
+                    Timber.d(cursor.getInt(1) + cursor.getString(3) + cursor.getString(5) + cursor.getString(4) + cursor.getString(2) + cursor.getDouble(6));
+                    tmpMoves.add(new Movie(cursor.getInt(1), cursor.getString(3), cursor.getString(5), cursor.getString(4), cursor.getString(2), cursor.getDouble(6)));
+                    cursor.moveToNext();
+                }
+                movies.clear();
+                updateMoviesList(tmpMoves);
             }
-            movies.clear();
-            updateMoviesList(tmpMoves);
         }
     }
 
